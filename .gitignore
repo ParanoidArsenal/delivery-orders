@@ -5,3 +5,7 @@ dist/
 .vs/
 .idea/
 *.user
+*.swp
+.DS_Store
+.env
+TestResults/
