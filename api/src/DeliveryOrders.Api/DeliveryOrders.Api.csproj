@@ -5,6 +5,10 @@
     <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
   </PropertyGroup>
   <ItemGroup>
+    <!-- WebApplicationFactory<Program> needs the implicit Program class visible to the tests. -->
+    <InternalsVisibleTo Include="DeliveryOrders.Api.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.18">
       <PrivateAssets>all</PrivateAssets>
