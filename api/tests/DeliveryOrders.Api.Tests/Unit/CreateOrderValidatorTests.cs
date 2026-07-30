@@ -1,10 +1,45 @@
+using System.Globalization;
 using DeliveryOrders.Api.Features.Orders;
+using DeliveryOrders.Api.Resources;
 using FluentValidation;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;
 
 namespace DeliveryOrders.Api.Tests.Unit;
+
+/// <summary>
+/// Returns the resource key's English text without touching resource loading, so the
+/// validator's rules can be unit-tested independently of culture and .resx lookup.
+/// </summary>
+internal sealed class StubLocalizer : IStringLocalizer<ValidationMessages>
+{
+    private static readonly Dictionary<string, string> Messages = new()
+    {
+        ["SenderCityRequired"] = "Sender city is required.",
+        ["SenderCityTooLong"] = "Sender city must be at most {0} characters.",
+        ["SenderAddressRequired"] = "Sender address is required.",
+        ["SenderAddressTooLong"] = "Sender address must be at most {0} characters.",
+        ["ReceiverCityRequired"] = "Receiver city is required.",
+        ["ReceiverCityTooLong"] = "Receiver city must be at most {0} characters.",
+        ["ReceiverAddressRequired"] = "Receiver address is required.",
+        ["ReceiverAddressTooLong"] = "Receiver address must be at most {0} characters.",
+        ["WeightPositive"] = "Weight must be greater than 0 kg.",
+        ["WeightMax"] = "Weight must not exceed {0} kg.",
+        ["WeightDecimals"] = "Weight must have at most 2 decimal places.",
+        ["PickupDatePast"] = "Pickup date must not be in the past.",
+    };
+
+    public LocalizedString this[string name] =>
+        new(name, Messages.TryGetValue(name, out var value) ? value : name, false);
+
+    public LocalizedString this[string name, params object[] arguments] =>
+        new(name, string.Format(CultureInfo.InvariantCulture, this[name].Value, arguments), false);
+
+    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
+        Messages.Select(kv => new LocalizedString(kv.Key, kv.Value, false));
+}
 
 public class CreateOrderValidatorTests
 {
@@ -13,7 +48,7 @@ public class CreateOrderValidatorTests
     private static IValidator<CreateOrderRequest> Validator()
     {
         var time = new FakeTimeProvider(Now);
-        return new CreateOrderValidator(time);
+        return new CreateOrderValidator(time, new StubLocalizer());
     }
 
     private static CreateOrderRequest Valid(

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SenderCityRequired" xml:space="preserve">
+    <value>Поле «Город отправителя» обязательно для заполнения.</value>
+  </data>
+  <data name="SenderCityTooLong" xml:space="preserve">
+    <value>Поле «Город отправителя» не должно превышать {0} символов.</value>
+  </data>
+  <data name="SenderAddressRequired" xml:space="preserve">
+    <value>Поле «Адрес отправителя» обязательно для заполнения.</value>
+  </data>
+  <data name="SenderAddressTooLong" xml:space="preserve">
+    <value>Поле «Адрес отправителя» не должно превышать {0} символов.</value>
+  </data>
+  <data name="ReceiverCityRequired" xml:space="preserve">
+    <value>Поле «Город получателя» обязательно для заполнения.</value>
+  </data>
+  <data name="ReceiverCityTooLong" xml:space="preserve">
+    <value>Поле «Город получателя» не должно превышать {0} символов.</value>
+  </data>
+  <data name="ReceiverAddressRequired" xml:space="preserve">
+    <value>Поле «Адрес получателя» обязательно для заполнения.</value>
+  </data>
+  <data name="ReceiverAddressTooLong" xml:space="preserve">
+    <value>Поле «Адрес получателя» не должно превышать {0} символов.</value>
+  </data>
+  <data name="WeightPositive" xml:space="preserve">
+    <value>Вес должен быть больше 0 кг.</value>
+  </data>
+  <data name="WeightMax" xml:space="preserve">
+    <value>Вес не должен превышать {0} кг.</value>
+  </data>
+  <data name="WeightDecimals" xml:space="preserve">
+    <value>Вес должен содержать не более 2 знаков после запятой.</value>
+  </data>
+  <data name="PickupDatePast" xml:space="preserve">
+    <value>Дата забора груза не может быть в прошлом.</value>
+  </data>
+  <data name="OrderNotFoundTitle" xml:space="preserve">
+    <value>Заказ не найден.</value>
+  </data>
+  <data name="OrderNotFoundDetail" xml:space="preserve">
+    <value>Заказ с идентификатором «{0}» не существует.</value>
+  </data>
+</root>

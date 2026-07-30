@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
 using DeliveryOrders.Api.Domain;
 using DeliveryOrders.Api.Infrastructure;
+using DeliveryOrders.Api.Resources;
 using FluentValidation;
+using Microsoft.Extensions.Localization;
 
 namespace DeliveryOrders.Api.Features.Orders;
 
@@ -16,38 +18,45 @@ public record CreateOrderRequest(
 
 public class CreateOrderValidator : AbstractValidator<CreateOrderRequest>
 {
-    public CreateOrderValidator(TimeProvider timeProvider)
+    public CreateOrderValidator(
+        TimeProvider timeProvider,
+        IStringLocalizer<ValidationMessages> localizer)
     {
         var today = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
 
         // FluentValidation's NotEmpty() accepts whitespace-only strings, so the
         // required check is expressed as an explicit non-whitespace predicate.
-        RequiredText(x => x.SenderCity, "Sender city", Order.MaxCityLength);
-        RequiredText(x => x.SenderAddress, "Sender address", Order.MaxAddressLength);
-        RequiredText(x => x.ReceiverCity, "Receiver city", Order.MaxCityLength);
-        RequiredText(x => x.ReceiverAddress, "Receiver address", Order.MaxAddressLength);
+        // Every message uses the lazy WithMessage overload: the eager one would
+        // capture the string at construction time, before the request culture applies.
+        RequiredText(x => x.SenderCity, "SenderCity", Order.MaxCityLength, localizer);
+        RequiredText(x => x.SenderAddress, "SenderAddress", Order.MaxAddressLength, localizer);
+        RequiredText(x => x.ReceiverCity, "ReceiverCity", Order.MaxCityLength, localizer);
+        RequiredText(x => x.ReceiverAddress, "ReceiverAddress", Order.MaxAddressLength, localizer);
 
         RuleFor(x => x.WeightKg)
-            .GreaterThan(0).WithMessage("Weight must be greater than 0 kg.")
+            .GreaterThan(0)
+                .WithMessage(_ => localizer["WeightPositive"].Value)
             .LessThanOrEqualTo(Order.MaxWeightKg)
-                .WithMessage($"Weight must not exceed {Order.MaxWeightKg:0} kg.")
+                .WithMessage(_ => localizer["WeightMax", Order.MaxWeightKg.ToString("0")].Value)
             .Must(w => decimal.Round(w, 2) == w)
-                .WithMessage("Weight must have at most 2 decimal places.");
+                .WithMessage(_ => localizer["WeightDecimals"].Value);
 
         RuleFor(x => x.PickupDate)
             .GreaterThanOrEqualTo(today)
-            .WithMessage("Pickup date must not be in the past.");
+                .WithMessage(_ => localizer["PickupDatePast"].Value);
     }
 
     private void RequiredText(
         Expression<Func<CreateOrderRequest, string>> selector,
-        string label,
-        int maxLength)
+        string keyPrefix,
+        int maxLength,
+        IStringLocalizer<ValidationMessages> localizer)
     {
         RuleFor(selector)
-            .Must(v => !string.IsNullOrWhiteSpace(v)).WithMessage($"{label} is required.")
+            .Must(v => !string.IsNullOrWhiteSpace(v))
+                .WithMessage(_ => localizer[$"{keyPrefix}Required"].Value)
             .MaximumLength(maxLength)
-                .WithMessage($"{label} must be at most {maxLength} characters.");
+                .WithMessage(_ => localizer[$"{keyPrefix}TooLong", maxLength].Value);
     }
 }
 
