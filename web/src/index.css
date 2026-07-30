@@ -1,0 +1,3 @@
+/* HeroUI v3's stylesheet imports Tailwind CSS v4 itself, plus its base layers,
+   default theme, utilities and variants. One import is the whole design system. */
+@import '@heroui/styles';
