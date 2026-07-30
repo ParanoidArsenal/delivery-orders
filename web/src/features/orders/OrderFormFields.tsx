@@ -1,6 +1,7 @@
 import { ErrorMessage, Input, Label } from '@heroui/react'
 import type { ComponentProps } from 'react'
 import type { FieldErrors, UseFormRegister } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import type { OrderFormValues } from './orderSchema'
 
 /**
@@ -46,35 +47,37 @@ interface Props {
 }
 
 export function OrderFormFields({ register, errors }: Props) {
+  const { t } = useTranslation()
+
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       <Field
         id="senderCity"
-        label="Sender city"
+        label={t('orders.form.senderCity')}
         error={errors.senderCity?.message}
         {...register('senderCity')}
       />
       <Field
         id="senderAddress"
-        label="Sender address"
+        label={t('orders.form.senderAddress')}
         error={errors.senderAddress?.message}
         {...register('senderAddress')}
       />
       <Field
         id="receiverCity"
-        label="Receiver city"
+        label={t('orders.form.receiverCity')}
         error={errors.receiverCity?.message}
         {...register('receiverCity')}
       />
       <Field
         id="receiverAddress"
-        label="Receiver address"
+        label={t('orders.form.receiverAddress')}
         error={errors.receiverAddress?.message}
         {...register('receiverAddress')}
       />
       <Field
         id="weightKg"
-        label="Weight, kg"
+        label={t('orders.form.weight')}
         type="number"
         step="0.01"
         min="0.01"
@@ -83,7 +86,7 @@ export function OrderFormFields({ register, errors }: Props) {
       />
       <Field
         id="pickupDate"
-        label="Pickup date"
+        label={t('orders.form.pickupDate')}
         type="date"
         error={errors.pickupDate?.message}
         {...register('pickupDate')}

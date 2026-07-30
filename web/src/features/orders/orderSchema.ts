@@ -1,15 +1,9 @@
+import type { TFunction } from 'i18next'
 import { z } from 'zod'
 
 const MAX_CITY = 100
 const MAX_ADDRESS = 250
 const MAX_WEIGHT = 20000
-
-const requiredText = (max: number, label: string) =>
-  z
-    .string()
-    .trim()
-    .min(1, `${label} is required.`)
-    .max(max, `${label} must be at most ${max} characters.`)
 
 /** Today in the user's local timezone, as YYYY-MM-DD. */
 export function today(): string {
@@ -19,25 +13,35 @@ export function today(): string {
 }
 
 /**
- * Mirrors the server's FluentValidation rules so the user gets immediate feedback.
- * The server remains the authority.
+ * Built per-render from the active translation function so validation messages
+ * follow the selected language. Mirrors the server's FluentValidation rules; the
+ * server remains the authority.
  */
-export const orderSchema = z.object({
-  senderCity: requiredText(MAX_CITY, 'Sender city'),
-  senderAddress: requiredText(MAX_ADDRESS, 'Sender address'),
-  receiverCity: requiredText(MAX_CITY, 'Receiver city'),
-  receiverAddress: requiredText(MAX_ADDRESS, 'Receiver address'),
-  weightKg: z
-    .number({ error: 'Weight is required.' })
-    .positive('Weight must be greater than 0 kg.')
-    .max(MAX_WEIGHT, `Weight must not exceed ${MAX_WEIGHT} kg.`)
-    .refine((v) => Math.round(v * 100) / 100 === v, {
-      message: 'Weight must have at most 2 decimal places.',
-    }),
-  pickupDate: z
-    .string()
-    .min(1, 'Pickup date is required.')
-    .refine((value) => value >= today(), { message: 'Pickup date must not be in the past.' }),
-})
+export function buildOrderSchema(t: TFunction) {
+  const requiredText = (max: number, fieldKey: string) =>
+    z
+      .string()
+      .trim()
+      .min(1, t('validation.required', { field: t(fieldKey) }))
+      .max(max, t('validation.maxLength', { field: t(fieldKey), max }))
 
-export type OrderFormValues = z.infer<typeof orderSchema>
+  return z.object({
+    senderCity: requiredText(MAX_CITY, 'orders.fields.senderCity'),
+    senderAddress: requiredText(MAX_ADDRESS, 'orders.fields.senderAddress'),
+    receiverCity: requiredText(MAX_CITY, 'orders.fields.receiverCity'),
+    receiverAddress: requiredText(MAX_ADDRESS, 'orders.fields.receiverAddress'),
+    weightKg: z
+      .number({ error: t('validation.required', { field: t('orders.fields.weight') }) })
+      .positive(t('validation.weightPositive'))
+      .max(MAX_WEIGHT, t('validation.weightMax', { max: MAX_WEIGHT }))
+      .refine((v) => Math.round(v * 100) / 100 === v, {
+        message: t('validation.weightDecimals'),
+      }),
+    pickupDate: z
+      .string()
+      .min(1, t('validation.required', { field: t('orders.fields.pickupDate') }))
+      .refine((value) => value >= today(), { message: t('validation.pickupDatePast') }),
+  })
+}
+
+export type OrderFormValues = z.infer<ReturnType<typeof buildOrderSchema>>

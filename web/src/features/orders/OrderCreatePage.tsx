@@ -1,22 +1,26 @@
 import { Button } from '@heroui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { ApiError, useCreateOrder } from '../../api/orders'
 import { ErrorView } from '../../components/StateViews'
 import { OrderFormFields } from './OrderFormFields'
-import { orderSchema, type OrderFormValues } from './orderSchema'
+import { buildOrderSchema, type OrderFormValues } from './orderSchema'
 
 export function OrderCreatePage() {
   const navigate = useNavigate()
   const createOrder = useCreateOrder()
+  const { t } = useTranslation()
+  const schema = useMemo(() => buildOrderSchema(t), [t])
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<OrderFormValues>({
-    resolver: zodResolver(orderSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       senderCity: '',
       senderAddress: '',
@@ -48,7 +52,7 @@ export function OrderCreatePage() {
 
   return (
     <section>
-      <h1 className="mb-6 text-2xl font-semibold">New delivery order</h1>
+      <h1 className="mb-6 text-2xl font-semibold">{t('orders.form.title')}</h1>
       {formError ? (
         <div className="mb-4">
           <ErrorView message={formError} />
@@ -58,10 +62,10 @@ export function OrderCreatePage() {
         <OrderFormFields register={register} errors={errors} />
         <div className="flex gap-3">
           <Button type="submit" variant="primary" isDisabled={isSubmitting}>
-            {isSubmitting ? 'Creating…' : 'Create order'}
+            {isSubmitting ? t('orders.form.submitting') : t('orders.form.submit')}
           </Button>
           <Button type="button" variant="secondary" onClick={() => void navigate('/')}>
-            Cancel
+            {t('common.cancel')}
           </Button>
         </div>
       </form>

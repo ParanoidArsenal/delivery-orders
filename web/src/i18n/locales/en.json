@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "Delivery Orders"
+  },
+  "nav": {
+    "newOrder": "New order"
+  },
+  "theme": {
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme"
+  },
+  "language": {
+    "label": "Language",
+    "en": "EN",
+    "ru": "RU"
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "error": "Something went wrong. Please try again.",
+    "cancel": "Cancel",
+    "backToList": "Back to list"
+  },
+  "orders": {
+    "list": {
+      "title": "Orders",
+      "loading": "Loading orders…",
+      "emptyTitle": "No orders yet",
+      "emptyDescription": "Create your first delivery order to see it here.",
+      "createFirst": "Create order"
+    },
+    "count_one": "{{count}} order",
+    "count_other": "{{count}} orders",
+    "table": {
+      "orderNumber": "Order number",
+      "route": "Route",
+      "weight": "Weight",
+      "pickup": "Pickup",
+      "caption": "All delivery orders, newest first",
+      "openOrder": "Open order {{orderNumber}}"
+    },
+    "detail": {
+      "loading": "Loading order…",
+      "heading": "Order {{orderNumber}}",
+      "created": "Created {{date}}",
+      "notFound": "Order not found."
+    },
+    "form": {
+      "title": "New delivery order",
+      "senderCity": "Sender city",
+      "senderAddress": "Sender address",
+      "receiverCity": "Receiver city",
+      "receiverAddress": "Receiver address",
+      "weight": "Weight, kg",
+      "pickupDate": "Pickup date",
+      "submit": "Create order",
+      "submitting": "Creating…"
+    },
+    "fields": {
+      "senderCity": "Sender city",
+      "senderAddress": "Sender address",
+      "receiverCity": "Receiver city",
+      "receiverAddress": "Receiver address",
+      "weight": "Weight, kg",
+      "pickupDate": "Pickup date"
+    }
+  },
+  "validation": {
+    "required": "{{field}} is required.",
+    "maxLength": "{{field}} must be at most {{max}} characters.",
+    "weightPositive": "Weight must be greater than 0 kg.",
+    "weightMax": "Weight must not exceed {{max}} kg.",
+    "weightDecimals": "Weight must have at most 2 decimal places.",
+    "pickupDatePast": "Pickup date must not be in the past."
+  },
+  "units": {
+    "kg": "kg"
+  }
+}

@@ -1,7 +1,9 @@
 import { Button } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router'
 import { useOrder } from '../../api/orders'
 import { ErrorView, Loading } from '../../components/StateViews'
+import { useFormatters } from '../../i18n/useFormatters'
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -15,32 +17,36 @@ function Row({ label, value }: { label: string; value: string }) {
 export function OrderDetailPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
+  const { t } = useTranslation()
+  const { formatDate, formatDateTime, formatWeight } = useFormatters()
   const { data: order, isPending, isError, error, refetch } = useOrder(id)
 
-  if (isPending) return <Loading label="Loading order…" />
+  if (isPending) return <Loading label={t('orders.detail.loading')} />
   if (isError) return <ErrorView message={(error as Error).message} onRetry={() => void refetch()} />
-  if (!order) return <ErrorView message="Order not found." />
+  if (!order) return <ErrorView message={t('orders.detail.notFound')} />
 
   return (
     <section>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Order {order.orderNumber}</h1>
+          <h1 className="text-2xl font-semibold">
+            {t('orders.detail.heading', { orderNumber: order.orderNumber })}
+          </h1>
           <p className="text-muted">
-            Created {new Date(order.createdAt).toLocaleString()}
+            {t('orders.detail.created', { date: formatDateTime(order.createdAt) })}
           </p>
         </div>
         <Button variant="secondary" onClick={() => void navigate('/')}>
-          Back to list
+          {t('common.backToList')}
         </Button>
       </div>
       <dl className="rounded-lg border border-border px-4 py-2">
-        <Row label="Sender city" value={order.senderCity} />
-        <Row label="Sender address" value={order.senderAddress} />
-        <Row label="Receiver city" value={order.receiverCity} />
-        <Row label="Receiver address" value={order.receiverAddress} />
-        <Row label="Weight, kg" value={String(order.weightKg)} />
-        <Row label="Pickup date" value={order.pickupDate} />
+        <Row label={t('orders.fields.senderCity')} value={order.senderCity} />
+        <Row label={t('orders.fields.senderAddress')} value={order.senderAddress} />
+        <Row label={t('orders.fields.receiverCity')} value={order.receiverCity} />
+        <Row label={t('orders.fields.receiverAddress')} value={order.receiverAddress} />
+        <Row label={t('orders.fields.weight')} value={formatWeight(order.weightKg)} />
+        <Row label={t('orders.fields.pickupDate')} value={formatDate(order.pickupDate)} />
       </dl>
     </section>
   )

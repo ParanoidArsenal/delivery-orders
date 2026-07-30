@@ -1,23 +1,25 @@
 import { Button } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { useOrders } from '../../api/orders'
 import { EmptyState, ErrorView, Loading } from '../../components/StateViews'
 
 export function OrderListPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { data: orders, isPending, isError, error, refetch } = useOrders()
 
-  if (isPending) return <Loading label="Loading orders…" />
+  if (isPending) return <Loading label={t('orders.list.loading')} />
   if (isError) return <ErrorView message={(error as Error).message} onRetry={() => void refetch()} />
 
   if (!orders || orders.length === 0) {
     return (
       <EmptyState
-        title="No orders yet"
-        description="Create your first delivery order to see it here."
+        title={t('orders.list.emptyTitle')}
+        description={t('orders.list.emptyDescription')}
         action={
           <Button variant="primary" onClick={() => void navigate('/orders/new')}>
-            Create order
+            {t('orders.list.createFirst')}
           </Button>
         }
       />
@@ -27,30 +29,30 @@ export function OrderListPage() {
   return (
     <section>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Orders</h1>
+        <h1 className="text-2xl font-semibold">{t('orders.list.title')}</h1>
         <Button variant="primary" onClick={() => void navigate('/orders/new')}>
-          New order
+          {t('nav.newOrder')}
         </Button>
       </div>
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-left text-sm">
-          <caption className="sr-only">All delivery orders, newest first</caption>
+          <caption className="sr-only">{t('orders.table.caption')}</caption>
           <thead className="bg-background-secondary">
             <tr>
               <th scope="col" className="px-4 py-3">
-                Order number
+                {t('orders.table.orderNumber')}
               </th>
               <th scope="col" className="px-4 py-3">
-                From
+                {t('orders.fields.senderCity')}
               </th>
               <th scope="col" className="px-4 py-3">
-                To
+                {t('orders.fields.receiverCity')}
               </th>
               <th scope="col" className="px-4 py-3">
-                Weight, kg
+                {t('orders.fields.weight')}
               </th>
               <th scope="col" className="px-4 py-3">
-                Pickup date
+                {t('orders.fields.pickupDate')}
               </th>
             </tr>
           </thead>
@@ -60,7 +62,7 @@ export function OrderListPage() {
                 key={order.id}
                 tabIndex={0}
                 role="link"
-                aria-label={`Open order ${order.orderNumber}`}
+                aria-label={t('orders.table.openOrder', { orderNumber: order.orderNumber })}
                 onClick={() => void navigate(`/orders/${order.id}`)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {

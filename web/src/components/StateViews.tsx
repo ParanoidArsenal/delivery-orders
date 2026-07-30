@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
-export function Loading({ label = 'Loading…' }: { label?: string }) {
+/** The label is always supplied by the caller so the copy stays in the locale files. */
+export function Loading({ label }: { label: string }) {
   return (
     <div role="status" className="py-16 text-center text-muted">
       {label}
@@ -27,12 +29,14 @@ export function EmptyState({
 }
 
 export function ErrorView({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useTranslation()
+
   return (
     <div role="alert" className="rounded-lg bg-danger-soft p-4 text-danger">
       <p>{message}</p>
       {onRetry ? (
         <button type="button" className="mt-2 underline" onClick={onRetry}>
-          Try again
+          {t('common.retry')}
         </button>
       ) : null}
     </div>

@@ -1,9 +1,11 @@
 import { Button } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '../theme/ThemeProvider'
 
 export function ThemeToggle() {
   const { theme, toggle } = useTheme()
-  const label = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+  const { t } = useTranslation()
+  const label = theme === 'dark' ? t('theme.switchToLight') : t('theme.switchToDark')
 
   return (
     <Button variant="ghost" isIconOnly aria-label={label} onClick={toggle}>

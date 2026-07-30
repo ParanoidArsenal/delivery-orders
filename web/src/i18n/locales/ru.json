@@ -1,0 +1,80 @@
+{
+  "app": {
+    "title": "Заказы на доставку"
+  },
+  "nav": {
+    "newOrder": "Новый заказ"
+  },
+  "theme": {
+    "switchToDark": "Включить тёмную тему",
+    "switchToLight": "Включить светлую тему"
+  },
+  "language": {
+    "label": "Язык",
+    "en": "EN",
+    "ru": "RU"
+  },
+  "common": {
+    "loading": "Загрузка…",
+    "retry": "Повторить",
+    "error": "Что-то пошло не так. Попробуйте ещё раз.",
+    "cancel": "Отмена",
+    "backToList": "Назад к списку"
+  },
+  "orders": {
+    "list": {
+      "title": "Заказы",
+      "loading": "Загрузка заказов…",
+      "emptyTitle": "Заказов пока нет",
+      "emptyDescription": "Создайте первый заказ на доставку, и он появится здесь.",
+      "createFirst": "Создать заказ"
+    },
+    "count_one": "{{count}} заказ",
+    "count_few": "{{count}} заказа",
+    "count_many": "{{count}} заказов",
+    "table": {
+      "orderNumber": "Номер заказа",
+      "route": "Маршрут",
+      "weight": "Вес",
+      "pickup": "Забор груза",
+      "caption": "Все заказы на доставку, сначала новые",
+      "openOrder": "Открыть заказ {{orderNumber}}"
+    },
+    "detail": {
+      "loading": "Загрузка заказа…",
+      "heading": "Заказ {{orderNumber}}",
+      "created": "Создан {{date}}",
+      "notFound": "Заказ не найден."
+    },
+    "form": {
+      "title": "Новый заказ на доставку",
+      "senderCity": "Город отправителя",
+      "senderAddress": "Адрес отправителя",
+      "receiverCity": "Город получателя",
+      "receiverAddress": "Адрес получателя",
+      "weight": "Вес, кг",
+      "pickupDate": "Дата забора груза",
+      "submit": "Создать заказ",
+      "submitting": "Создание…"
+    },
+    "fields": {
+      "senderCity": "Город отправителя",
+      "senderAddress": "Адрес отправителя",
+      "receiverCity": "Город получателя",
+      "receiverAddress": "Адрес получателя",
+      "weight": "Вес, кг",
+      "pickupDate": "Дата забора груза"
+    }
+  },
+  "validation": {
+    "required": "Поле «{{field}}» обязательно для заполнения.",
+    "maxLength": "Поле «{{field}}» не должно превышать {{max}} символов.",
+    "weightPositive": "Вес должен быть больше 0 кг.",
+    "weightMax": "Вес не должен превышать {{max}} кг.",
+    "weightDecimals": "Вес должен содержать не более 2 знаков после запятой.",
+    "pickupDatePast": "Дата забора груза не может быть в прошлом."
+  },
+  "units": {
+    "kg": "кг"
+  }
+}

@@ -48,7 +48,7 @@ describe('OrderCreatePage', () => {
     expect(screen.getByText(/sender address is required/i)).toBeInTheDocument()
     expect(screen.getByText(/receiver city is required/i)).toBeInTheDocument()
     expect(screen.getByText(/receiver address is required/i)).toBeInTheDocument()
-    expect(screen.getByText(/weight is required/i)).toBeInTheDocument()
+    expect(screen.getByText(/Weight, kg is required/i)).toBeInTheDocument()
     expect(screen.getByText(/pickup date is required/i)).toBeInTheDocument()
     expect(post).not.toHaveBeenCalled()
   })
