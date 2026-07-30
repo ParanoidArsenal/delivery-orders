@@ -1,3 +1,4 @@
+using System.Reflection;
 using DeliveryOrders.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,6 +6,28 @@ namespace DeliveryOrders.Api.Common;
 
 public static class DatabaseStartup
 {
+    /// <summary>
+    /// Whether startup migration should run in the current process.
+    /// </summary>
+    /// <remarks>
+    /// The OpenAPI document exporter (Microsoft.Extensions.ApiDescription.Server) generates
+    /// the document during <c>dotnet build</c> by loading this application and executing
+    /// Program.cs up to <c>app.Run()</c> — in a process with no database reachable. Migrating
+    /// there exhausts the retry budget and then fails the build, so it is skipped. The
+    /// configuration flag additionally lets a host opt out entirely.
+    /// </remarks>
+    public static bool ShouldMigrateOnStartup(IConfiguration configuration)
+    {
+        if (!configuration.GetValue("Database:MigrateOnStartup", true))
+        {
+            return false;
+        }
+
+        var entryAssembly = Assembly.GetEntryAssembly()?.GetName().Name;
+        return entryAssembly is null
+            || !entryAssembly.Contains("GetDocument", StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>
     /// Applies pending migrations, retrying because Compose may start the API
     /// before PostgreSQL finishes accepting connections.

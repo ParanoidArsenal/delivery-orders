@@ -7,6 +7,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/DeliveryOrders.Api/DeliveryOrders.Api.csproj" />
