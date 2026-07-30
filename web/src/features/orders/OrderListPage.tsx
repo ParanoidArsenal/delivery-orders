@@ -14,7 +14,12 @@ export function OrderListPage() {
 
   if (isPending) return <Loading label={t('orders.list.loading')} />
   if (isError) {
-    return <ErrorView message={(error as Error).message} onRetry={() => void refetch()} />
+    return (
+      <ErrorView
+        message={(error as Error).message || t('common.error')}
+        onRetry={() => void refetch()}
+      />
+    )
   }
 
   if (!orders || orders.length === 0) {

@@ -22,7 +22,14 @@ export function OrderDetailPage() {
   const { data: order, isPending, isError, error, refetch } = useOrder(id)
 
   if (isPending) return <Loading label={t('orders.detail.loading')} />
-  if (isError) return <ErrorView message={(error as Error).message} onRetry={() => void refetch()} />
+  if (isError) {
+    return (
+      <ErrorView
+        message={(error as Error).message || t('common.error')}
+        onRetry={() => void refetch()}
+      />
+    )
+  }
   if (!order) return <ErrorView message={t('orders.detail.notFound')} />
 
   return (

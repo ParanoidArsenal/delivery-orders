@@ -6,6 +6,9 @@ and address, cargo weight, pickup date), an **order list** showing every order t
 with its automatically generated order number, and a **read-only order view** opened by
 clicking a row in the list.
 
+The interface is available in **English and Russian** and in a **light and dark theme**,
+both switchable from the header.
+
 Built with ASP.NET 9, Entity Framework Core 9, PostgreSQL 17 and React 19.
 
 ## Quick start
@@ -33,6 +36,50 @@ startup, retrying while PostgreSQL finishes becoming available.
 docker compose down      # stop, keep the data
 docker compose down -v   # stop and delete the database volume
 ```
+
+## Localization
+
+The whole interface is translated into English and Russian. The two segmented buttons in
+the header switch the language; the choice is written to `localStorage` under `lang` and
+restored on the next visit, so no account or server round trip is involved. On a first
+visit the language is detected from the browser, falling back to English for anything
+other than English or Russian.
+
+All copy lives in two hand-edited files, `web/src/i18n/locales/en.json` and
+`web/src/i18n/locales/ru.json`; components contain no literal user-visible text. Order
+data is never translated — cities and addresses are shown exactly as they were typed.
+
+Dates, times and weights are formatted with `Intl` bound to the active language, so the
+list shows `Jul 30, 2026` and `1,250.5 kg` in English and `30 июл. 2026 г.` and
+`1 250,5 кг` in Russian. The row count under the table uses the correct Russian plural
+form (`1 заказ`, `3 заказа`, `11 заказов`).
+
+**The API is localized too.** Every request the frontend makes carries
+`Accept-Language: en|ru`, and ASP.NET's request localization resolves the culture from
+that header (unsupported values fall back to English). Validation messages and the "order
+not found" problem details come from `ValidationMessages.resx` /
+`ValidationMessages.ru.resx` and are resolved per request, so a server-side rejection
+appears in the same language as the rest of the screen and responses carry a matching
+`Content-Language` header:
+
+```bash
+curl -s -X POST http://localhost:8080/api/orders \
+  -H 'Content-Type: application/json' -H 'Accept-Language: ru' \
+  -d '{"senderCity":"","senderAddress":"","receiverCity":"","receiverAddress":"","weightKg":0,"pickupDate":"2000-01-01"}'
+# → "Поле «Город отправителя» обязательно для заполнения.", "Вес должен быть больше 0 кг.", …
+```
+
+Because the messages come from satellite assemblies and the header is parsed with real
+culture data, `InvariantGlobalization` is switched **off** in `api/Directory.Build.props`.
+
+## Theme
+
+The header also carries a light/dark toggle. It sets `data-theme="light|dark"` on the
+`<html>` element — the single attribute HeroUI v3 keys its entire palette on, so no
+component needs a `dark:` override — and persists the choice to `localStorage` under
+`theme`. A tiny inline script in `index.html` applies the stored theme before the bundle
+loads, so a reload never flashes the wrong background. The system `prefers-color-scheme`
+setting is deliberately not consulted: the toggle is the only input.
 
 ## Configuration
 
@@ -69,9 +116,11 @@ for `http://localhost:5173` in the Development environment.
 
 ## Tests
 
-**API** — 27 tests: unit tests for the order-number format, the domain entity and every
+**API** — 33 tests: unit tests for the order-number format, the domain entity and every
 validation rule, plus integration tests that run the real application against a
-throwaway PostgreSQL container via Testcontainers.
+throwaway PostgreSQL container via Testcontainers, including six that assert
+`Accept-Language` behaviour (Russian and English validation messages, an unsupported
+locale falling back to English, and a localized 404).
 
 ```bash
 cd api
@@ -90,9 +139,17 @@ docker run --rm \
   mcr.microsoft.com/dotnet/sdk:9.0 dotnet test DeliveryOrders.sln
 ```
 
-**Frontend** — 5 tests covering the create form: required-field errors, past pickup
-dates, out-of-range weights, the submitted payload, and mapping a server field error
-onto the right input.
+**Frontend** — 20 tests in 4 files:
+
+- 5 on the create form: required-field errors, past pickup dates, out-of-range weights,
+  the submitted payload, and mapping a server field error onto the right input;
+- 6 on localization: copy re-rendering between languages, the active-language button
+  state, Russian and English plural forms for the row count, `<html lang>`, and a check
+  that the two locale files have identical key sets;
+- 5 on the theme: the light default, toggling and restoring `data-theme`, persistence to
+  `localStorage`, and the toggle's accessible label;
+- 4 on the formatters: English and Russian dates, the localized weight unit, and whole
+  numbers not being padded with decimals.
 
 ```bash
 cd web
@@ -146,7 +203,9 @@ sequential numbers. The unique index on `order_number` is a backstop, not the me
 **Validation** runs in a FluentValidation endpoint filter and returns RFC 9457
 `ProblemDetails` with an `errors` dictionary keyed by camelCase field name, which the
 frontend maps back onto individual inputs. The same rules are mirrored in a Zod schema
-for immediate client-side feedback; the server remains the authority.
+for immediate client-side feedback; the server remains the authority. Each side reads its
+copy from its own message store — the locale JSON on the client, the `.resx` files on the
+server — so the wording agrees in either language.
 
 **In production there is one origin**: nginx serves the built frontend and
 reverse-proxies `/api`, `/openapi`, `/scalar` and `/health` to the API, so no CORS
@@ -161,7 +220,8 @@ api/
     Domain/                       # Order entity, order-number format
     Features/Orders/              # one file per operation
     Infrastructure/               # DbContext, configurations, migrations, generator
-    Common/                       # validation filter, startup migration
+    Common/                       # validation filter, startup migration, localization setup
+    Resources/                    # ValidationMessages.resx (+ .ru)
     Dockerfile
   tests/DeliveryOrders.Api.Tests/ # Unit/ and Integration/
   openapi/v1.json                 # generated at build, committed
@@ -169,7 +229,9 @@ web/
   src/
     api/                          # generated schema, typed client, query hooks
     features/orders/              # list, create and detail screens
-    components/                   # layout and shared state views
+    components/                   # layout, language switcher, theme toggle, state views
+    i18n/                         # i18next setup, en/ru locale files, Intl formatters
+    theme/                        # data-theme provider and useTheme()
   nginx.conf                      # static serving + /api reverse proxy
   Dockerfile
 docker-compose.yml
@@ -193,6 +255,21 @@ conflict:
   Core than the API was compiled against.
 - **Startup migration is skipped during document generation** — the OpenAPI exporter runs
   the application up to `app.Run()` at build time, with no database reachable.
+- **`AddLocalization()` is called without `ResourcesPath`** — the resource marker type
+  already lives in the `DeliveryOrders.Api.Resources` namespace, and
+  `ResourceManagerStringLocalizerFactory` composes the root namespace with
+  `ResourcesPath`. Setting both produced the prefix
+  `DeliveryOrders.Api.Resources.Resources.ValidationMessages`, which matches no embedded
+  resource, and every lookup silently returned the raw key instead of the message.
+- **Validation messages use FluentValidation's lazy `WithMessage(_ => …)` overload** —
+  the eager string overload would resolve the message once when the validator is
+  constructed, before the request culture is known.
+
+Localization adds three frontend dependencies, at the versions the design called for:
+`i18next` 26.3.6, `react-i18next` 17.0.11 and `i18next-browser-languagedetector` 8.2.1.
+They push the production bundle past Vite's default 500 kB advisory threshold (562 kB
+raw, 176 kB gzipped); the warning is left visible rather than silenced by raising the
+limit.
 
 `npm audit` reports advisories in `openapi-typescript`'s transitive dependency chain
 (`@redocly/openapi-core` → `minimatch` → `brace-expansion`). These are build-time only,

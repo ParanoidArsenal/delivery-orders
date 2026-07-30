@@ -34,7 +34,7 @@ export function OrderCreatePage() {
   const formError =
     createOrder.error instanceof ApiError &&
     Object.keys(createOrder.error.fieldErrors).length === 0
-      ? createOrder.error.message
+      ? createOrder.error.message || t('common.error')
       : null
 
   const onSubmit = handleSubmit(async (values) => {
