@@ -30,6 +30,9 @@ function Field({
         id={id}
         aria-invalid={!!error}
         aria-describedby={error ? errorId : undefined}
+        // HeroUI styles the invalid state from data-invalid, which react-aria only
+        // sets automatically inside a TextField context that v3 does not provide.
+        data-invalid={error ? 'true' : undefined}
         {...inputProps}
       />
       {error ? <ErrorMessage id={errorId}>{error}</ErrorMessage> : null}
