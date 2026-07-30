@@ -8,7 +8,7 @@ export function AppLayout() {
           <Link to="/" className="text-lg font-semibold">
             Delivery Orders
           </Link>
-          <Link to="/orders/new" className="text-sm text-primary underline">
+          <Link to="/orders/new" className="text-sm text-link underline">
             New order
           </Link>
         </div>

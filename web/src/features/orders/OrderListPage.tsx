@@ -35,7 +35,7 @@ export function OrderListPage() {
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">All delivery orders, newest first</caption>
-          <thead className="bg-muted">
+          <thead className="bg-background-secondary">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Order number
@@ -68,16 +68,16 @@ export function OrderListPage() {
                     void navigate(`/orders/${order.id}`)
                   }
                 }}
-                className="cursor-pointer border-t border-border hover:bg-muted/50 focus:bg-muted/50"
+                className="cursor-pointer border-t border-border hover:bg-background-secondary focus:bg-background-secondary"
               >
                 <td className="px-4 py-3 font-medium">{order.orderNumber}</td>
                 <td className="px-4 py-3">
                   <div>{order.senderCity}</div>
-                  <div className="text-muted-foreground">{order.senderAddress}</div>
+                  <div className="text-muted">{order.senderAddress}</div>
                 </td>
                 <td className="px-4 py-3">
                   <div>{order.receiverCity}</div>
-                  <div className="text-muted-foreground">{order.receiverAddress}</div>
+                  <div className="text-muted">{order.receiverAddress}</div>
                 </td>
                 <td className="px-4 py-3">{order.weightKg}</td>
                 <td className="px-4 py-3">{order.pickupDate}</td>

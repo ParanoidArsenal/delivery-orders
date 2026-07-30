@@ -6,7 +6,7 @@ import { ErrorView, Loading } from '../../components/StateViews'
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-t border-border py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-      <dt className="text-muted-foreground">{label}</dt>
+      <dt className="text-muted">{label}</dt>
       <dd className="sm:col-span-2">{value}</dd>
     </div>
   )
@@ -26,7 +26,7 @@ export function OrderDetailPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Order {order.orderNumber}</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted">
             Created {new Date(order.createdAt).toLocaleString()}
           </p>
         </div>
