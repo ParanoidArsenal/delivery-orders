@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router'
+import { ThemeToggle } from './ThemeToggle'
 
 export function AppLayout() {
   return (
@@ -8,9 +9,12 @@ export function AppLayout() {
           <Link to="/" className="text-lg font-semibold">
             Delivery Orders
           </Link>
-          <Link to="/orders/new" className="text-sm text-link underline">
-            New order
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/orders/new" className="text-sm text-link underline">
+              New order
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-8">
