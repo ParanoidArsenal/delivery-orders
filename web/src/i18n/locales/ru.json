@@ -28,7 +28,15 @@
       "loading": "Загрузка заказов…",
       "emptyTitle": "Заказов пока нет",
       "emptyDescription": "Создайте первый заказ на доставку, и он появится здесь.",
-      "createFirst": "Создать заказ"
+      "createFirst": "Создать заказ",
+      "summaryCount": "Заказы",
+      "summaryWeight": "Общий вес",
+      "summaryNextPickup": "Ближайший забор",
+      "noPickup": "—",
+      "searchLabel": "Поиск заказов",
+      "searchPlaceholder": "Поиск по номеру, городу или адресу…",
+      "noMatches": "Нет заказов, соответствующих «{{query}}».",
+      "clearSearch": "Очистить поиск"
     },
     "count_one": "{{count}} заказ",
     "count_few": "{{count}} заказа",
@@ -41,7 +49,8 @@
       "pickup": "Забор груза",
       "actions": "Действия",
       "caption": "Все заказы на доставку, сначала новые",
-      "openOrder": "Открыть заказ {{orderNumber}}"
+      "openOrder": "Открыть заказ {{orderNumber}}",
+      "sortBy": "Сортировать по: {{column}}"
     },
     "detail": {
       "loading": "Загрузка заказа…",

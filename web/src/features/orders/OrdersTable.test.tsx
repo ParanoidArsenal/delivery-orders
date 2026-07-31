@@ -1,9 +1,12 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import type { Order } from '../../api/client'
 import i18n from '../../i18n'
 import { OrdersTable } from './OrdersTable'
+
+type TableProps = ComponentProps<typeof OrdersTable>
 
 const orders: Order[] = [
   {
@@ -30,9 +33,21 @@ const orders: Order[] = [
   },
 ]
 
+function props(overrides: Partial<TableProps> = {}): TableProps {
+  return {
+    orders,
+    onOpen: vi.fn(),
+    sort: null,
+    onSort: vi.fn(),
+    query: '',
+    onClearQuery: vi.fn(),
+    ...overrides,
+  }
+}
+
 describe('OrdersTable', () => {
   it('renders the translated column headers and caption', () => {
-    render(<OrdersTable orders={orders} onOpen={vi.fn()} />)
+    render(<OrdersTable {...props()} />)
 
     expect(screen.getByRole('columnheader', { name: 'Order number' })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: 'Route' })).toBeInTheDocument()
@@ -42,7 +57,7 @@ describe('OrdersTable', () => {
   })
 
   it('exposes every row as a link with an accessible label', () => {
-    render(<OrdersTable orders={orders} onOpen={vi.fn()} />)
+    render(<OrdersTable {...props()} />)
 
     const row = screen.getByRole('link', { name: 'Open order ORD-20260815-0001' })
     expect(row).toHaveAttribute('tabindex', '0')
@@ -52,7 +67,7 @@ describe('OrdersTable', () => {
   it('opens the order on click, Enter and Space', async () => {
     const onOpen = vi.fn()
     const user = userEvent.setup()
-    render(<OrdersTable orders={orders} onOpen={onOpen} />)
+    render(<OrdersTable {...props({ onOpen })} />)
 
     const row = screen.getByRole('link', { name: 'Open order ORD-20260816-0002' })
 
@@ -68,7 +83,7 @@ describe('OrdersTable', () => {
   })
 
   it('formats the weight and pickup date for the active locale', async () => {
-    const { rerender } = render(<OrdersTable orders={orders} onOpen={vi.fn()} />)
+    const { rerender } = render(<OrdersTable {...props()} />)
 
     const row = screen.getByRole('link', { name: /ORD-20260815-0001/ })
     expect(within(row).getByText('1,250.5 kg')).toBeInTheDocument()
@@ -77,7 +92,7 @@ describe('OrdersTable', () => {
     expect(within(row).getByText('Kazan')).toBeInTheDocument()
 
     await i18n.changeLanguage('ru')
-    rerender(<OrdersTable orders={orders} onOpen={vi.fn()} />)
+    rerender(<OrdersTable {...props()} />)
 
     const ruRow = screen.getByRole('link', { name: /ORD-20260815-0001/ })
     expect(within(ruRow).getByText('1 250,5 кг')).toBeInTheDocument()
@@ -86,19 +101,19 @@ describe('OrdersTable', () => {
   })
 
   it('shows the pluralised order count', async () => {
-    const { rerender } = render(<OrdersTable orders={orders} onOpen={vi.fn()} />)
+    const { rerender } = render(<OrdersTable {...props()} />)
     expect(screen.getByText('2 orders')).toBeInTheDocument()
 
-    rerender(<OrdersTable orders={[orders[0]]} onOpen={vi.fn()} />)
+    rerender(<OrdersTable {...props({ orders: [orders[0]] })} />)
     expect(screen.getByText('1 order')).toBeInTheDocument()
 
     await i18n.changeLanguage('ru')
-    rerender(<OrdersTable orders={orders} onOpen={vi.fn()} />)
+    rerender(<OrdersTable {...props()} />)
     expect(screen.getByText('2 заказа')).toBeInTheDocument()
   })
 
   it('labels every data cell for the mobile card layout', () => {
-    render(<OrdersTable orders={[orders[0]]} onOpen={vi.fn()} />)
+    render(<OrdersTable {...props({ orders: [orders[0]] })} />)
 
     const cells = screen.getAllByRole('cell')
     const labelled = cells.filter((cell) => cell.hasAttribute('data-label'))
@@ -110,5 +125,37 @@ describe('OrdersTable', () => {
       'Pickup',
     ])
     expect(cells).toHaveLength(labelled.length + 1)
+  })
+  it('marks sortable headers with aria-sort and toggles on click', async () => {
+    const onSort = vi.fn()
+    const user = userEvent.setup()
+    render(<OrdersTable {...props({ onSort, sort: { key: 'weightKg', direction: 'asc' } })} />)
+
+    expect(screen.getByRole('columnheader', { name: /weight/i })).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    )
+
+    await user.click(screen.getByRole('button', { name: /sort by weight/i }))
+    expect(onSort).toHaveBeenCalledWith('weightKg')
+  })
+
+  it('does not offer sorting on the route column', () => {
+    render(<OrdersTable {...props()} />)
+
+    const routeHeader = screen.getByRole('columnheader', { name: /route/i })
+    expect(routeHeader.querySelector('button')).toBeNull()
+  })
+
+  it('shows a no-matches state naming the query, with a clear action', async () => {
+    const onClearQuery = vi.fn()
+    const user = userEvent.setup()
+    render(<OrdersTable {...props({ orders: [], query: 'zzz', onClearQuery })} />)
+
+    expect(screen.getByText(/no orders match/i)).toBeInTheDocument()
+    expect(screen.getByText(/zzz/)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /clear search/i }))
+    expect(onClearQuery).toHaveBeenCalled()
   })
 })

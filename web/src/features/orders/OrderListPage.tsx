@@ -3,12 +3,16 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { useOrders } from '../../api/orders'
 import { EmptyState, ErrorView, Loading } from '../../components/StateViews'
+import { OrdersSummary } from './OrdersSummary'
 import { OrdersTable } from './OrdersTable'
+import { OrdersToolbar } from './OrdersToolbar'
+import { useOrderListView } from './useOrderListView'
 
 export function OrderListPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: orders, isPending, isError, error, refetch } = useOrders()
+  const view = useOrderListView(orders ?? [])
 
   const open = (id: string) => void navigate(`/orders/${id}`)
 
@@ -37,14 +41,18 @@ export function OrderListPage() {
   }
 
   return (
-    <section>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t('orders.list.title')}</h1>
-        <Button variant="primary" onClick={() => void navigate('/orders/new')}>
-          {t('nav.newOrder')}
-        </Button>
-      </div>
-      <OrdersTable orders={orders} onOpen={open} />
+    <section className="flex flex-col gap-5">
+      <h1 className="text-2xl font-semibold">{t('orders.list.title')}</h1>
+      <OrdersSummary summary={view.summary} />
+      <OrdersToolbar query={view.query} onQueryChange={view.setQuery} />
+      <OrdersTable
+        orders={view.rows}
+        onOpen={open}
+        sort={view.sort}
+        onSort={view.toggleSort}
+        query={view.query}
+        onClearQuery={() => view.setQuery('')}
+      />
     </section>
   )
 }

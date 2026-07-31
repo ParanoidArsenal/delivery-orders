@@ -28,7 +28,15 @@
       "loading": "Loading orders…",
       "emptyTitle": "No orders yet",
       "emptyDescription": "Create your first delivery order to see it here.",
-      "createFirst": "Create order"
+      "createFirst": "Create order",
+      "summaryCount": "Orders",
+      "summaryWeight": "Total weight",
+      "summaryNextPickup": "Next pickup",
+      "noPickup": "—",
+      "searchLabel": "Search orders",
+      "searchPlaceholder": "Search by number, city or address…",
+      "noMatches": "No orders match “{{query}}”.",
+      "clearSearch": "Clear search"
     },
     "count_one": "{{count}} order",
     "count_other": "{{count}} orders",
@@ -39,7 +47,8 @@
       "pickup": "Pickup",
       "actions": "Actions",
       "caption": "All delivery orders, newest first",
-      "openOrder": "Open order {{orderNumber}}"
+      "openOrder": "Open order {{orderNumber}}",
+      "sortBy": "Sort by {{column}}"
     },
     "detail": {
       "loading": "Loading order…",
