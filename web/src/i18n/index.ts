@@ -8,6 +8,21 @@ export const SUPPORTED_LANGUAGES = ['en', 'ru'] as const
 export type Language = (typeof SUPPORTED_LANGUAGES)[number]
 export const LANGUAGE_STORAGE_KEY = 'lang'
 
+/**
+ * Keep the document's declared language and title in sync. Registered BEFORE `init()`:
+ * because the resources are bundled inline, i18next resolves the detected language
+ * synchronously inside `init()` and emits `languageChanged` before that call returns,
+ * so a listener added afterwards would miss the initial language.
+ */
+function syncDocument(language: string) {
+  document.documentElement.lang = language
+  // The tab title is outside React's tree, so it needs updating explicitly —
+  // otherwise a fully Russian UI sits under an English tab.
+  document.title = i18n.t('app.title')
+}
+
+i18n.on('languageChanged', syncDocument)
+
 void i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -29,9 +44,9 @@ void i18n
     },
   })
 
-// Keep the document's declared language in sync for assistive technology.
-i18n.on('languageChanged', (language) => {
-  document.documentElement.lang = language
-})
+// Belt and braces for the case where detection resolves after init returns.
+if (i18n.resolvedLanguage) {
+  syncDocument(i18n.resolvedLanguage)
+}
 
 export default i18n

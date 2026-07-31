@@ -32,11 +32,13 @@
     "count_one": "{{count}} заказ",
     "count_few": "{{count}} заказа",
     "count_many": "{{count}} заказов",
+    "count_other": "{{count}} заказа",
     "table": {
       "orderNumber": "Номер заказа",
       "route": "Маршрут",
       "weight": "Вес",
       "pickup": "Забор груза",
+      "actions": "Действия",
       "caption": "Все заказы на доставку, сначала новые",
       "openOrder": "Открыть заказ {{orderNumber}}"
     },

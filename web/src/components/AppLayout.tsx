@@ -13,7 +13,9 @@ export function AppLayout() {
           <Link to="/" className="text-lg font-semibold">
             {t('app.title')}
           </Link>
-          <div className="flex items-center gap-3">
+          {/* Wraps rather than squeezing: on 320-414px phones the Russian title and the
+              controls would otherwise collide. */}
+          <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
             <Link to="/orders/new" className="text-sm text-link underline">
               {t('nav.newOrder')}
             </Link>

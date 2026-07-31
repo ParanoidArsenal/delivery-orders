@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '../../api/client'
+import i18n from '../../i18n'
 import { OrderCreatePage } from './OrderCreatePage'
 
 function renderPage() {
@@ -51,6 +52,24 @@ describe('OrderCreatePage', () => {
     expect(screen.getByText(/Weight, kg is required/i)).toBeInTheDocument()
     expect(screen.getByText(/pickup date is required/i)).toBeInTheDocument()
     expect(post).not.toHaveBeenCalled()
+  })
+
+  it('re-translates validation messages already on screen when the language changes', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: /create order/i }))
+    expect(await screen.findByText(/sender city is required/i)).toBeInTheDocument()
+
+    await act(async () => {
+      await i18n.changeLanguage('ru')
+    })
+
+    expect(
+      await screen.findByText('Поле «Город отправителя» обязательно для заполнения.'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Поле «Вес, кг» обязательно для заполнения.')).toBeInTheDocument()
+    expect(screen.queryByText(/sender city is required/i)).not.toBeInTheDocument()
   })
 
   it('rejects a pickup date in the past', async () => {

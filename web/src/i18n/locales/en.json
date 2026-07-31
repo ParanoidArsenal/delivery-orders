@@ -36,6 +36,7 @@
       "route": "Route",
       "weight": "Weight",
       "pickup": "Pickup",
+      "actions": "Actions",
       "caption": "All delivery orders, newest first",
       "openOrder": "Open order {{orderNumber}}"
     },

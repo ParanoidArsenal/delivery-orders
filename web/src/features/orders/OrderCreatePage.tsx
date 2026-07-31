@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
@@ -12,13 +12,14 @@ import { buildOrderSchema, type OrderFormValues } from './orderSchema'
 export function OrderCreatePage() {
   const navigate = useNavigate()
   const createOrder = useCreateOrder()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const schema = useMemo(() => buildOrderSchema(t), [t])
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors, isSubmitting },
+    trigger,
+    formState: { errors, isSubmitting, isSubmitted },
   } = useForm<OrderFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -29,6 +30,17 @@ export function OrderCreatePage() {
       pickupDate: '',
     },
   })
+
+  // react-hook-form keeps the resolved message strings in formState, so a language
+  // change alone leaves messages already on screen in the previous language. Re-run
+  // validation against the new schema, but only when the language actually changed —
+  // re-validating on submit would wipe the field errors the server just returned.
+  const renderedLanguage = useRef(i18n.language)
+  useEffect(() => {
+    if (renderedLanguage.current === i18n.language) return
+    renderedLanguage.current = i18n.language
+    if (isSubmitted) void trigger()
+  }, [i18n.language, isSubmitted, trigger])
 
   // Only surface a headline error when the failure was not attributable to fields.
   const formError =

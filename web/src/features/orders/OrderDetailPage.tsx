@@ -7,7 +7,7 @@ import { useFormatters } from '../../i18n/useFormatters'
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-t border-border py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+    <div className="border-b border-border py-3 last:border-b-0 sm:grid sm:grid-cols-3 sm:gap-4">
       <dt className="text-muted">{label}</dt>
       <dd className="sm:col-span-2">{value}</dd>
     </div>
@@ -47,7 +47,7 @@ export function OrderDetailPage() {
           {t('common.backToList')}
         </Button>
       </div>
-      <dl className="rounded-lg border border-border px-4 py-2">
+      <dl className="rounded-lg border border-border px-4">
         <Row label={t('orders.fields.senderCity')} value={order.senderCity} />
         <Row label={t('orders.fields.senderAddress')} value={order.senderAddress} />
         <Row label={t('orders.fields.receiverCity')} value={order.receiverCity} />

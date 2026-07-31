@@ -10,16 +10,14 @@ describe('useFormatters', () => {
 
   it('formats a date for English', () => {
     const { result } = renderHook(() => useFormatters())
-    expect(result.current.formatDate('2026-07-31')).toMatch(/31/)
-    expect(result.current.formatDate('2026-07-31')).toMatch(/Jul/i)
+    // Exact string, so the day/month ordering is actually pinned.
+    expect(result.current.formatDate('2026-07-31')).toBe('Jul 31, 2026')
   })
 
   it('formats a date for Russian', async () => {
     await i18n.changeLanguage('ru')
     const { result } = renderHook(() => useFormatters())
-    const formatted = result.current.formatDate('2026-07-31')
-    expect(formatted).toMatch(/31/)
-    expect(formatted).toMatch(/июл/i)
+    expect(result.current.formatDate('2026-07-31')).toBe('31 июл. 2026 г.')
   })
 
   it('appends the localized unit to a weight', async () => {
@@ -28,7 +26,7 @@ describe('useFormatters', () => {
 
     await i18n.changeLanguage('ru')
     const { result: ru } = renderHook(() => useFormatters())
-    expect(ru.current.formatWeight(7.25)).toMatch(/кг$/)
+    expect(ru.current.formatWeight(7.25)).toBe('7,25 кг')
   })
 
   it('does not pad whole numbers with decimals', () => {

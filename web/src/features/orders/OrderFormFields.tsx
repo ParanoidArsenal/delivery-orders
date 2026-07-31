@@ -36,7 +36,13 @@ function Field({
         data-invalid={error ? 'true' : undefined}
         {...inputProps}
       />
-      {error ? <ErrorMessage id={errorId}>{error}</ErrorMessage> : null}
+      {/* danger-soft-foreground rather than HeroUI's default --danger: plain danger on
+          the page background is only 3.27:1 at this size, below WCAG AA. */}
+      {error ? (
+        <ErrorMessage id={errorId} className="text-danger-soft-foreground">
+          {error}
+        </ErrorMessage>
+      ) : null}
     </div>
   )
 }

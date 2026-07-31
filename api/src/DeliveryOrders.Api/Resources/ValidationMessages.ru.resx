@@ -100,4 +100,7 @@
   <data name="OrderNotFoundDetail" xml:space="preserve">
     <value>Заказ с идентификатором «{0}» не существует.</value>
   </data>
+  <data name="ValidationFailedTitle" xml:space="preserve">
+    <value>Обнаружены ошибки заполнения.</value>
+  </data>
 </root>

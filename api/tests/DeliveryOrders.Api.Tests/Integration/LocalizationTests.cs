@@ -43,15 +43,51 @@ public class LocalizationTests(PostgresFixture fixture) : IAsyncLifetime
     private static string First(JsonElement errors, string field) =>
         errors.GetProperty(field)[0].GetString()!;
 
-    [Fact]
-    public async Task Returns_russian_messages_for_ru()
+    // "ru-RU" and the multi-value form are what real browsers actually send, and what the
+    // frontend forwards from i18n.language — the bare tag alone would leave parent-culture
+    // fallback untested.
+    [Theory]
+    [InlineData("ru")]
+    [InlineData("ru-RU")]
+    public async Task Returns_russian_messages_for_ru(string acceptLanguage)
     {
-        var errors = await PostInvalidAsync("ru");
+        var errors = await PostInvalidAsync(acceptLanguage);
 
         First(errors, "senderCity").ShouldContain("обязательно");
         First(errors, "receiverAddress").ShouldContain("обязательно");
         First(errors, "weightKg").ShouldContain("Вес");
         First(errors, "pickupDate").ShouldContain("прошлом");
+    }
+
+    [Fact]
+    public async Task Returns_russian_messages_for_a_browser_style_header()
+    {
+        var client = fixture.CreateClient();
+        foreach (var (tag, quality) in new[] { ("ru-RU", 1.0), ("ru", 0.9), ("en", 0.8) })
+        {
+            client.DefaultRequestHeaders.AcceptLanguage.Add(
+                new StringWithQualityHeaderValue(tag, quality));
+        }
+
+        var response = await client.PostAsJsonAsync("/api/orders", InvalidPayload);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+
+        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("errors").GetProperty("senderCity")[0].GetString()!
+            .ShouldContain("обязательно");
+    }
+
+    [Fact]
+    public async Task Localizes_the_validation_problem_title()
+    {
+        var client = fixture.CreateClient();
+        client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("ru"));
+
+        var response = await client.PostAsJsonAsync("/api/orders", InvalidPayload);
+        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        // A Russian body under an English headline is a mixed-language response.
+        problem.GetProperty("title").GetString().ShouldBe("Обнаружены ошибки заполнения.");
     }
 
     [Fact]

@@ -100,4 +100,7 @@
   <data name="OrderNotFoundDetail" xml:space="preserve">
     <value>No order exists with id '{0}'.</value>
   </data>
+  <data name="ValidationFailedTitle" xml:space="preserve">
+    <value>One or more validation errors occurred.</value>
+  </data>
 </root>

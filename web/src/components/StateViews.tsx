@@ -32,7 +32,9 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry?: () 
   const { t } = useTranslation()
 
   return (
-    <div role="alert" className="rounded-lg bg-danger-soft p-4 text-danger">
+    // danger-soft-foreground is the token HeroUI defines for text on the soft danger
+    // surface; plain text-danger only reaches 2.68:1 on it in light mode.
+    <div role="alert" className="rounded-lg bg-danger-soft p-4 text-danger-soft-foreground">
       <p>{message}</p>
       {onRetry ? (
         <button type="button" className="mt-2 underline" onClick={onRetry}>

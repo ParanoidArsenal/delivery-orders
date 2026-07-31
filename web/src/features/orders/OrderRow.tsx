@@ -43,7 +43,9 @@ export function OrderRow({
           open()
         }
       }}
-      className="cursor-pointer border-t border-border transition-colors hover:bg-background-secondary focus-visible:bg-background-secondary focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus"
+      // background-tertiary rather than -secondary: the secondary step is only a 4%
+      // mix, which is invisible against the near-black dark background.
+      className="cursor-pointer border-t border-border transition-colors hover:bg-background-tertiary focus-visible:bg-background-tertiary focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus"
     >
       <td
         data-label={t('orders.table.orderNumber')}

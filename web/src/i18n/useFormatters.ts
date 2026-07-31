@@ -24,7 +24,10 @@ export function useFormatters() {
     })
 
     return {
-      /** `2026-07-31` -> `31 Jul 2026` / `31 июл. 2026` */
+      /**
+       * `2026-07-31` -> `Jul 31, 2026` (en) / `31 июл. 2026 г.` (ru).
+       * Each locale gets its own conventional order; no pattern is imposed.
+       */
       formatDate: (iso: string) => date.format(new Date(`${iso}T00:00:00`)),
       formatDateTime: (iso: string) => dateTime.format(new Date(iso)),
       formatWeight: (kg: number) => `${number.format(kg)} ${t('units.kg')}`,

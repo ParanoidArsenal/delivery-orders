@@ -1,5 +1,7 @@
 using System.Text.Json;
+using DeliveryOrders.Api.Resources;
 using FluentValidation;
+using Microsoft.Extensions.Localization;
 
 namespace DeliveryOrders.Api.Common;
 
@@ -7,7 +9,9 @@ namespace DeliveryOrders.Api.Common;
 /// Validates the first argument of type <typeparamref name="T"/> and short-circuits
 /// with an RFC 9457 validation problem whose error keys are camelCase field names.
 /// </summary>
-public class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter
+public class ValidationFilter<T>(
+    IValidator<T> validator,
+    IStringLocalizer<ValidationMessages> localizer) : IEndpointFilter
     where T : class
 {
     public async ValueTask<object?> InvokeAsync(
@@ -30,7 +34,11 @@ public class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter
             .GroupBy(e => JsonNamingPolicy.CamelCase.ConvertName(e.PropertyName))
             .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
-        return TypedResults.ValidationProblem(errors, title: "One or more validation errors occurred.");
+        // The title is localized too: a Russian caller receiving Russian field messages
+        // under an English headline is a mixed-language response.
+        return TypedResults.ValidationProblem(
+            errors,
+            title: localizer["ValidationFailedTitle"].Value);
     }
 }
 

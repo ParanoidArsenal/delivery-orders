@@ -116,11 +116,12 @@ for `http://localhost:5173` in the Development environment.
 
 ## Tests
 
-**API** — 33 tests: unit tests for the order-number format, the domain entity and every
+**API** — 36 tests: unit tests for the order-number format, the domain entity and every
 validation rule, plus integration tests that run the real application against a
-throwaway PostgreSQL container via Testcontainers, including six that assert
-`Accept-Language` behaviour (Russian and English validation messages, an unsupported
-locale falling back to English, and a localized 404).
+throwaway PostgreSQL container via Testcontainers, including nine that assert
+`Accept-Language` behaviour — Russian and English validation messages, the regional
+(`ru-RU`) and full browser-style (`ru-RU,ru;q=0.9,en;q=0.8`) header forms, an unsupported
+locale falling back to English, a localized problem title, and a localized 404.
 
 ```bash
 cd api
@@ -139,17 +140,30 @@ docker run --rm \
   mcr.microsoft.com/dotnet/sdk:9.0 dotnet test DeliveryOrders.sln
 ```
 
-**Frontend** — 20 tests in 4 files:
+**Frontend** — 30 tests in 7 files:
 
-- 5 on the create form: required-field errors, past pickup dates, out-of-range weights,
-  the submitted payload, and mapping a server field error onto the right input;
+- 6 on the create form: required-field errors, past pickup dates, out-of-range weights,
+  the submitted payload, mapping a server field error onto the right input, and
+  re-translating messages already on screen when the language changes;
 - 6 on localization: copy re-rendering between languages, the active-language button
   state, Russian and English plural forms for the row count, `<html lang>`, and a check
   that the two locale files have identical key sets;
 - 5 on the theme: the light default, toggling and restoring `data-theme`, persistence to
   `localStorage`, and the toggle's accessible label;
 - 4 on the formatters: English and Russian dates, the localized weight unit, and whole
-  numbers not being padded with decimals.
+  numbers not being padded with decimals;
+- 7 on the orders table: translated column headers, the row's link role and accessible
+  name, click and Enter/Space activation, localized weight and date cells, the plural row
+  count, and the `data-label` attributes the mobile card layout depends on;
+- 2 on `Accept-Language` propagation: the header carries the active language and follows
+  a language change.
+
+### A known limitation
+
+The pickup-date field is a native `<input type="date">`, so Chrome renders its
+`mm/dd/yyyy` placeholder from the **browser's** UI locale rather than from
+`<html lang>`. Switching the app to Russian cannot change it; only a custom date-picker
+component could, which is more machinery than the field warrants here.
 
 ```bash
 cd web
