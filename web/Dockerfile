@@ -1,4 +1,3 @@
-# Build context is the web/ directory.
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package*.json ./

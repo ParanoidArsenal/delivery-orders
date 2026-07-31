@@ -10,7 +10,6 @@ describe('useFormatters', () => {
 
   it('formats a date for English', () => {
     const { result } = renderHook(() => useFormatters())
-    // Exact string, so the day/month ordering is actually pinned.
     expect(result.current.formatDate('2026-07-31')).toBe('Jul 31, 2026')
   })
 

@@ -6,9 +6,6 @@ export function LanguageSwitcher() {
   const active = i18n.language.split('-')[0] as Language
 
   return (
-    // shrink-0: as a flex child of the header cluster the group would otherwise be
-    // squeezed below its content width on narrow phones, and overflow-hidden would
-    // slice the second button instead of scrolling it.
     <div
       role="group"
       aria-label={t('language.label')}

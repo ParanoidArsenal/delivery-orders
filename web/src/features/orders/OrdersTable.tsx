@@ -16,8 +16,6 @@ export function OrdersTable({
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="orders-table w-full text-left text-sm">
           <caption className="sr-only">{t('orders.table.caption')}</caption>
-          {/* secondary, one step quieter than the rows' tertiary hover tint: a header
-              painted the same as a hovered row destroys the hover affordance. */}
           <thead className="bg-background-secondary">
             <tr className="text-[11px] uppercase tracking-wider text-muted">
               <th scope="col" className="px-4 py-2.5 font-medium">

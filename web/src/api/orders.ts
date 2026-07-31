@@ -4,7 +4,6 @@ import { extractProblem, type FieldErrors } from './problem'
 
 export const ordersKey = ['orders'] as const
 
-/** Error carrying per-field messages from an RFC 9457 validation problem. */
 export class ApiError extends Error {
   constructor(
     message: string,

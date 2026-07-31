@@ -5,10 +5,6 @@ using Microsoft.Extensions.Localization;
 
 namespace DeliveryOrders.Api.Common;
 
-/// <summary>
-/// Validates the first argument of type <typeparamref name="T"/> and short-circuits
-/// with an RFC 9457 validation problem whose error keys are camelCase field names.
-/// </summary>
 public class ValidationFilter<T>(
     IValidator<T> validator,
     IStringLocalizer<ValidationMessages> localizer) : IEndpointFilter
@@ -34,8 +30,6 @@ public class ValidationFilter<T>(
             .GroupBy(e => JsonNamingPolicy.CamelCase.ConvertName(e.PropertyName))
             .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
-        // The title is localized too: a Russian caller receiving Russian field messages
-        // under an English headline is a mixed-language response.
         return TypedResults.ValidationProblem(
             errors,
             title: localizer["ValidationFailedTitle"].Value);

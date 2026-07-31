@@ -4,12 +4,6 @@ import type { FieldErrors, UseFormRegister } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import type { OrderFormValues } from './orderSchema'
 
-/**
- * HeroUI v3 is composition-based (it wraps react-aria-components and has no
- * TextField wrapper), so label association is wired explicitly here: htmlFor/id
- * plus aria-describedby and aria-invalid. Screen readers and the tests both rely
- * on this being real, not visual.
- */
 function Field({
   id,
   label,
@@ -31,13 +25,9 @@ function Field({
         id={id}
         aria-invalid={!!error}
         aria-describedby={error ? errorId : undefined}
-        // HeroUI styles the invalid state from data-invalid, which react-aria only
-        // sets automatically inside a TextField context that v3 does not provide.
         data-invalid={error ? 'true' : undefined}
         {...inputProps}
       />
-      {/* danger-soft-foreground rather than HeroUI's default --danger: plain danger on
-          the page background is only 3.27:1 at this size, below WCAG AA. */}
       {error ? (
         <ErrorMessage id={errorId} className="text-danger-soft-foreground">
           {error}

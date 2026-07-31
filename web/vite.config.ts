@@ -7,7 +7,6 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // The API runs separately in development; nginx handles this in production.
       '/api': { target: 'http://localhost:8080', changeOrigin: true },
     },
   },

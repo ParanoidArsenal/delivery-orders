@@ -9,10 +9,6 @@ using Xunit;
 
 namespace DeliveryOrders.Api.Tests.Unit;
 
-/// <summary>
-/// Returns the resource key's English text without touching resource loading, so the
-/// validator's rules can be unit-tested independently of culture and .resx lookup.
-/// </summary>
 internal sealed class StubLocalizer : IStringLocalizer<ValidationMessages>
 {
     private static readonly Dictionary<string, string> Messages = new()

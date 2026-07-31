@@ -5,18 +5,12 @@ const MAX_CITY = 100
 const MAX_ADDRESS = 250
 const MAX_WEIGHT = 20000
 
-/** Today in the user's local timezone, as YYYY-MM-DD. */
 export function today(): string {
   const now = new Date()
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
   return local.toISOString().slice(0, 10)
 }
 
-/**
- * Built per-render from the active translation function so validation messages
- * follow the selected language. Mirrors the server's FluentValidation rules; the
- * server remains the authority.
- */
 export function buildOrderSchema(t: TFunction) {
   const requiredText = (max: number, fieldKey: string) =>
     z

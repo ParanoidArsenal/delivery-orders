@@ -43,9 +43,6 @@ public class LocalizationTests(PostgresFixture fixture) : IAsyncLifetime
     private static string First(JsonElement errors, string field) =>
         errors.GetProperty(field)[0].GetString()!;
 
-    // "ru-RU" and the multi-value form are what real browsers actually send, and what the
-    // frontend forwards from i18n.language — the bare tag alone would leave parent-culture
-    // fallback untested.
     [Theory]
     [InlineData("ru")]
     [InlineData("ru-RU")]
@@ -86,7 +83,6 @@ public class LocalizationTests(PostgresFixture fixture) : IAsyncLifetime
         var response = await client.PostAsJsonAsync("/api/orders", InvalidPayload);
         var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-        // A Russian body under an English headline is a mixed-language response.
         problem.GetProperty("title").GetString().ShouldBe("Обнаружены ошибки заполнения.");
     }
 
@@ -139,7 +135,6 @@ public class LocalizationTests(PostgresFixture fixture) : IAsyncLifetime
         var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
         var message = problem.GetProperty("errors").GetProperty("senderCity")[0].GetString()!;
 
-        // fr is unsupported, so the next acceptable language wins.
         message.ShouldContain("обязательно");
     }
 }

@@ -9,10 +9,6 @@ using Xunit;
 
 namespace DeliveryOrders.Api.Tests.Integration;
 
-/// <summary>
-/// Boots the real API against a throwaway PostgreSQL container, so EF mappings,
-/// migrations and the concurrent order-number allocation are exercised for real.
-/// </summary>
 public class PostgresFixture : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _db = new PostgreSqlBuilder("postgres:17-alpine").Build();
@@ -30,7 +26,6 @@ public class PostgresFixture : IAsyncLifetime
                 builder.UseSetting("ConnectionStrings:Default", _db.GetConnectionString());
             });
 
-        // Force host construction so startup migrations run before the first test.
         _ = _factory.CreateClient();
     }
 

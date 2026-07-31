@@ -1,14 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-/**
- * The API localizes its validation messages from Accept-Language. Without this header
- * every server-side message silently reverts to English while the UI is Russian, and
- * nothing else in the suite would notice.
- *
- * The client is imported dynamically with an absolute base URL stubbed in: the real
- * default is the relative `/`, which Node's URL parser cannot resolve outside a browser.
- * The middleware under test is the production one in `api/client.ts`.
- */
 describe('Accept-Language propagation', () => {
   beforeEach(() => {
     vi.resetModules()
@@ -21,8 +12,6 @@ describe('Accept-Language propagation', () => {
   })
 
   async function load() {
-    // A fresh Response per call: a single shared one has its body consumed by the
-    // first request and the second then throws "Body has already been read".
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
       Promise.resolve(
         new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }),

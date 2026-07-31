@@ -5,7 +5,6 @@
     <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
   </PropertyGroup>
   <ItemGroup>
-    <!-- WebApplicationFactory<Program> needs the implicit Program class visible to the tests. -->
     <InternalsVisibleTo Include="DeliveryOrders.Api.Tests" />
   </ItemGroup>
   <ItemGroup>
@@ -14,9 +13,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <!-- Npgsql 9.0.4 only requires EF Core 9.0.1; pin 9.0.18 explicitly so the version
-         is unified for referencing projects (the test project) and not just for this one,
-         where Design's PrivateAssets=all would otherwise hide it. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.18" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />

@@ -31,10 +31,6 @@ export function OrderCreatePage() {
     },
   })
 
-  // react-hook-form keeps the resolved message strings in formState, so a language
-  // change alone leaves messages already on screen in the previous language. Re-run
-  // validation against the new schema, but only when the language actually changed —
-  // re-validating on submit would wipe the field errors the server just returned.
   const renderedLanguage = useRef(i18n.language)
   useEffect(() => {
     if (renderedLanguage.current === i18n.language) return
@@ -42,7 +38,6 @@ export function OrderCreatePage() {
     if (isSubmitted) void trigger()
   }, [i18n.language, isSubmitted, trigger])
 
-  // Only surface a headline error when the failure was not attributable to fields.
   const formError =
     createOrder.error instanceof ApiError &&
     Object.keys(createOrder.error.fieldErrors).length === 0

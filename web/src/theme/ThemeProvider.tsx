@@ -18,8 +18,6 @@ function readStoredTheme(): Theme {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(readStoredTheme)
 
-  // HeroUI v3 defines its whole palette under [data-theme="dark"], so setting this
-  // one attribute themes the entire application.
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     localStorage.setItem(THEME_STORAGE_KEY, theme)

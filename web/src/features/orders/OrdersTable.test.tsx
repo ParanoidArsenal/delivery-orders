@@ -80,8 +80,6 @@ describe('OrdersTable', () => {
     rerender(<OrdersTable orders={orders} onOpen={vi.fn()} />)
 
     const ruRow = screen.getByRole('link', { name: /ORD-20260815-0001/ })
-    // Russian groups with a non-breaking space and uses a comma decimal mark; Testing
-    // Library collapses the NBSP to a plain space before comparing.
     expect(within(ruRow).getByText('1 250,5 кг')).toBeInTheDocument()
     expect(within(ruRow).getByText('15 авг. 2026 г.')).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: 'Номер заказа' })).toBeInTheDocument()
@@ -111,7 +109,6 @@ describe('OrdersTable', () => {
       'Weight',
       'Pickup',
     ])
-    // Only the chevron cell carries no data of its own.
     expect(cells).toHaveLength(labelled.length + 1)
   })
 })

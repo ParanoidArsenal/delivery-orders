@@ -7,7 +7,6 @@ using Microsoft.Extensions.Localization;
 
 namespace DeliveryOrders.Api.Features.Orders;
 
-/// <summary>Payload for creating a delivery order. Every field is required.</summary>
 public record CreateOrderRequest(
     string SenderCity,
     string SenderAddress,
@@ -24,10 +23,6 @@ public class CreateOrderValidator : AbstractValidator<CreateOrderRequest>
     {
         var today = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
 
-        // FluentValidation's NotEmpty() accepts whitespace-only strings, so the
-        // required check is expressed as an explicit non-whitespace predicate.
-        // Every message uses the lazy WithMessage overload: the eager one would
-        // capture the string at construction time, before the request culture applies.
         RequiredText(x => x.SenderCity, "SenderCity", Order.MaxCityLength, localizer);
         RequiredText(x => x.SenderAddress, "SenderAddress", Order.MaxAddressLength, localizer);
         RequiredText(x => x.ReceiverCity, "ReceiverCity", Order.MaxCityLength, localizer);

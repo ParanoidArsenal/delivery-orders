@@ -5,10 +5,6 @@ using Npgsql;
 
 namespace DeliveryOrders.Api.Infrastructure;
 
-/// <summary>
-/// Allocates a per-day sequence with a single atomic upsert, so concurrent
-/// creates cannot collide and no read-then-write race exists.
-/// </summary>
 public class OrderNumberGenerator(AppDbContext db) : IOrderNumberGenerator
 {
     private const string AllocateSql = """

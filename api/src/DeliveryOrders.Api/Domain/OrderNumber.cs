@@ -1,6 +1,5 @@
 namespace DeliveryOrders.Api.Domain;
 
-/// <summary>Human-readable order number: ORD-{yyyyMMdd}-{sequence}.</summary>
 public static class OrderNumber
 {
     public const string Prefix = "ORD";

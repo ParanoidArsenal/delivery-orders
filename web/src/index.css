@@ -1,9 +1,5 @@
-/* HeroUI v3's stylesheet imports Tailwind CSS v4 itself, plus its base layers,
-   default theme, utilities and variants. One import is the whole design system. */
 @import '@heroui/styles';
 
-/* Below 640px the orders table reflows: each row becomes a stacked card with its
-   column name shown as a label. */
 @media (width < 40rem) {
   .orders-table thead {
     display: none;
@@ -20,8 +16,6 @@
     padding: 0 !important;
   }
 
-  /* Order number and the chevron share the first line, the route spans the card,
-     weight and pickup sit side by side beneath it. */
   .orders-table td:nth-child(1) {
     grid-area: 1 / 1;
   }
@@ -43,7 +37,6 @@
     grid-area: 3 / 2;
   }
 
-  /* The City -> City route must wrap instead of widening the card. */
   .orders-table td:nth-child(2) > div:first-child {
     flex-wrap: wrap;
   }

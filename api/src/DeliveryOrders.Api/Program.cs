@@ -33,7 +33,6 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
-// Sets CurrentUICulture from Accept-Language before any endpoint or validation filter runs.
 app.UseAppLocalization();
 
 if (corsOrigins.Length > 0)

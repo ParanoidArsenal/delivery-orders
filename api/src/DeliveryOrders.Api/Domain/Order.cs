@@ -1,6 +1,5 @@
 namespace DeliveryOrders.Api.Domain;
 
-/// <summary>A delivery order. Persistence-ignorant: no EF Core or ASP.NET types here.</summary>
 public class Order
 {
     public const int MaxCityLength = 100;
@@ -8,7 +7,7 @@ public class Order
     public const int MaxOrderNumberLength = 32;
     public const decimal MaxWeightKg = 20_000m;
 
-    private Order() { }   // EF Core
+    private Order() { }
 
     public Guid Id { get; private set; }
     public string OrderNumber { get; private set; } = null!;

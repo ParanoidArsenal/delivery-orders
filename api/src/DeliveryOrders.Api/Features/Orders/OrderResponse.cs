@@ -2,7 +2,6 @@ using DeliveryOrders.Api.Domain;
 
 namespace DeliveryOrders.Api.Features.Orders;
 
-/// <summary>An order as returned by the API. Entities never cross the HTTP boundary.</summary>
 public record OrderResponse(
     Guid Id,
     string OrderNumber,
