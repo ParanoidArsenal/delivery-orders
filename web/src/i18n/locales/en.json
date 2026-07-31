@@ -3,7 +3,8 @@
     "title": "Delivery Orders"
   },
   "nav": {
-    "newOrder": "New order"
+    "newOrder": "New order",
+    "breadcrumbOrders": "Orders"
   },
   "theme": {
     "switchToDark": "Switch to dark theme",

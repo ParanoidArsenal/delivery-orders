@@ -3,7 +3,8 @@
     "title": "Заказы на доставку"
   },
   "nav": {
-    "newOrder": "Новый заказ"
+    "newOrder": "Новый заказ",
+    "breadcrumbOrders": "Заказы"
   },
   "theme": {
     "switchToDark": "Включить тёмную тему",
