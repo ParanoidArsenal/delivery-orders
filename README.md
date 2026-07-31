@@ -1,10 +1,17 @@
 # Delivery Orders
 
-A web application for accepting delivery orders. It has three screens: a **create
-order** form where all six fields are mandatory (sender city and address, receiver city
-and address, cargo weight, pickup date), an **order list** showing every order together
-with its automatically generated order number, and a **read-only order view** opened by
-clicking a row in the list.
+A web application for accepting delivery orders. It has three screens:
+
+- a **create order** form where all six fields are mandatory, grouped into sender,
+  receiver and shipment;
+- an **order list** showing every order with its automatically generated order number,
+  above a summary of count, total weight and the nearest upcoming pickup, with search
+  across number, city and address and sortable number, weight and pickup columns;
+- a **read-only order view**, opened by clicking a row, led by the route as an
+  origin-to-destination leg.
+
+Search, sorting and the summary are computed in the browser from the list the API already
+returns, so they add no endpoints.
 
 The interface is available in **English and Russian** and in a **light and dark theme**,
 both switchable from the header.
@@ -140,7 +147,7 @@ docker run --rm \
   mcr.microsoft.com/dotnet/sdk:9.0 dotnet test DeliveryOrders.sln
 ```
 
-**Frontend** — 30 tests in 7 files:
+**Frontend** — 57 tests in 9 files:
 
 - 6 on the create form: required-field errors, past pickup dates, out-of-range weights,
   the submitted payload, mapping a server field error onto the right input, and
@@ -156,7 +163,12 @@ docker run --rm \
   name, click and Enter/Space activation, localized weight and date cells, the plural row
   count, and the `data-label` attributes the mobile card layout depends on;
 - 2 on `Accept-Language` propagation: the header carries the active language and follows
-  a language change.
+  a language change;
+- 17 on the list view logic: search across number, city and address; sorting by number,
+  weight and pickup date in both directions; and the derived summary, including that the
+  nearest pickup ignores dates that have already passed;
+- 5 on the order detail screen: the route's origin and destination, the fact tiles, the
+  breadcrumb, and that no editable control is rendered.
 
 ### A known limitation
 

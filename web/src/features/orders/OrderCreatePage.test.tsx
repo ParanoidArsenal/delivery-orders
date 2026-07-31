@@ -57,7 +57,7 @@ describe('OrderCreatePage', () => {
     expect(screen.getByText(/sender address is required/i)).toBeInTheDocument()
     expect(screen.getByText(/receiver city is required/i)).toBeInTheDocument()
     expect(screen.getByText(/receiver address is required/i)).toBeInTheDocument()
-    expect(screen.getByText(/Weight, kg is required/i)).toBeInTheDocument()
+    expect(screen.getByText(/^Weight is required\.$/i)).toBeInTheDocument()
     expect(screen.getByText(/pickup date is required/i)).toBeInTheDocument()
     expect(post).not.toHaveBeenCalled()
   })
@@ -76,7 +76,7 @@ describe('OrderCreatePage', () => {
     expect(
       await screen.findByText('Поле «Город отправителя» обязательно для заполнения.'),
     ).toBeInTheDocument()
-    expect(screen.getByText('Поле «Вес, кг» обязательно для заполнения.')).toBeInTheDocument()
+    expect(screen.getByText('Поле «Вес» обязательно для заполнения.')).toBeInTheDocument()
     expect(screen.queryByText(/sender city is required/i)).not.toBeInTheDocument()
   })
 

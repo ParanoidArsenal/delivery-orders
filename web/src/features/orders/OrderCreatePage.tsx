@@ -61,7 +61,7 @@ export function OrderCreatePage() {
   return (
     <section>
       <Breadcrumb
-        items={[{ label: t('nav.breadcrumbOrders'), to: '/' }, { label: t('orders.form.title') }]}
+        items={[{ label: t('nav.breadcrumbOrders'), to: '/' }, { label: t('nav.newOrder') }]}
       />
       <h1 className="mb-6 text-2xl font-semibold">{t('orders.form.title')}</h1>
       {formError ? (

@@ -25,7 +25,7 @@ export function buildOrderSchema(t: TFunction) {
     receiverCity: requiredText(MAX_CITY, 'orders.fields.receiverCity'),
     receiverAddress: requiredText(MAX_ADDRESS, 'orders.fields.receiverAddress'),
     weightKg: z
-      .number({ error: t('validation.required', { field: t('orders.fields.weight') }) })
+      .number({ error: t('validation.weightRequired') })
       .positive(t('validation.weightPositive'))
       .max(MAX_WEIGHT, t('validation.weightMax', { max: MAX_WEIGHT }))
       .refine((v) => Math.round(v * 100) / 100 === v, {

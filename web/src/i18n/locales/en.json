@@ -95,7 +95,8 @@
     "weightPositive": "Weight must be greater than 0 kg.",
     "weightMax": "Weight must not exceed {{max}} kg.",
     "weightDecimals": "Weight must have at most 2 decimal places.",
-    "pickupDatePast": "Pickup date must not be in the past."
+    "pickupDatePast": "Pickup date must not be in the past.",
+    "weightRequired": "Weight is required."
   },
   "units": {
     "kg": "kg"

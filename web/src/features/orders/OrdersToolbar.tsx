@@ -18,6 +18,7 @@ export function OrdersToolbar({
       <Input
         id="orders-search"
         type="search"
+        fullWidth
         value={query}
         placeholder={t('orders.list.searchPlaceholder')}
         onChange={(event) => onQueryChange(event.target.value)}
