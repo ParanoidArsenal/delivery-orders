@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { ApiError, useCreateOrder } from '../../api/orders'
+import { Breadcrumb } from '../../components/Breadcrumb'
 import { ErrorView } from '../../components/StateViews'
 import { OrderFormFields } from './OrderFormFields'
 import { buildOrderSchema, type OrderFormValues } from './orderSchema'
@@ -59,6 +60,9 @@ export function OrderCreatePage() {
 
   return (
     <section>
+      <Breadcrumb
+        items={[{ label: t('nav.breadcrumbOrders'), to: '/' }, { label: t('orders.form.title') }]}
+      />
       <h1 className="mb-6 text-2xl font-semibold">{t('orders.form.title')}</h1>
       {formError ? (
         <div className="mb-4">

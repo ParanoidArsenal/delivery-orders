@@ -65,7 +65,15 @@
       "weight": "Weight, kg",
       "pickupDate": "Pickup date",
       "submit": "Create order",
-      "submitting": "Creating…"
+      "submitting": "Creating…",
+      "city": "City",
+      "address": "Address",
+      "pickupHint": "Today or later",
+      "groups": {
+        "sender": "Sender",
+        "receiver": "Receiver",
+        "shipment": "Shipment"
+      }
     },
     "fields": {
       "senderCity": "Sender city",

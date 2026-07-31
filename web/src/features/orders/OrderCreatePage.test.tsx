@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -24,13 +24,21 @@ function tomorrow(): string {
   return date.toISOString().slice(0, 10)
 }
 
+function group(name: RegExp) {
+  return screen.getByRole('group', { name })
+}
+
+function field(groupName: RegExp, label: RegExp) {
+  return within(group(groupName)).getByLabelText(label)
+}
+
 async function fillValidForm(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText(/sender city/i), 'Moscow')
-  await user.type(screen.getByLabelText(/sender address/i), 'Tverskaya 1')
-  await user.type(screen.getByLabelText(/receiver city/i), 'Kazan')
-  await user.type(screen.getByLabelText(/receiver address/i), 'Bauman 5')
-  await user.type(screen.getByLabelText(/weight/i), '12.5')
-  await user.type(screen.getByLabelText(/pickup date/i), tomorrow())
+  await user.type(field(/sender/i, /city/i), 'Moscow')
+  await user.type(field(/sender/i, /address/i), 'Tverskaya 1')
+  await user.type(field(/receiver/i, /city/i), 'Kazan')
+  await user.type(field(/receiver/i, /address/i), 'Bauman 5')
+  await user.type(field(/shipment/i, /weight/i), '12.5')
+  await user.type(field(/shipment/i, /pickup date/i), tomorrow())
 }
 
 describe('OrderCreatePage', () => {
@@ -78,8 +86,8 @@ describe('OrderCreatePage', () => {
     renderPage()
 
     await fillValidForm(user)
-    await user.clear(screen.getByLabelText(/pickup date/i))
-    await user.type(screen.getByLabelText(/pickup date/i), '2000-01-01')
+    await user.clear(field(/shipment/i, /pickup date/i))
+    await user.type(field(/shipment/i, /pickup date/i), '2000-01-01')
     await user.click(screen.getByRole('button', { name: /create order/i }))
 
     expect(await screen.findByText(/must not be in the past/i)).toBeInTheDocument()
@@ -91,8 +99,8 @@ describe('OrderCreatePage', () => {
     renderPage()
 
     await fillValidForm(user)
-    await user.clear(screen.getByLabelText(/weight/i))
-    await user.type(screen.getByLabelText(/weight/i), '20001')
+    await user.clear(field(/shipment/i, /weight/i))
+    await user.type(field(/shipment/i, /weight/i), '20001')
     await user.click(screen.getByRole('button', { name: /create order/i }))
 
     expect(await screen.findByText(/must not exceed 20000 kg/i)).toBeInTheDocument()
@@ -138,5 +146,22 @@ describe('OrderCreatePage', () => {
     await user.click(screen.getByRole('button', { name: /create order/i }))
 
     expect(await screen.findByText(/sender city is not served/i)).toBeInTheDocument()
+  })
+  it('groups the fields into sender, receiver and shipment', () => {
+    renderPage()
+
+    expect(screen.getByRole('group', { name: /sender/i })).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: /receiver/i })).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: /shipment/i })).toBeInTheDocument()
+  })
+
+  it('associates the pickup-date hint with its input', () => {
+    renderPage()
+
+    const input = field(/shipment/i, /pickup date/i)
+    const describedBy = input.getAttribute('aria-describedby')
+    expect(describedBy).toBeTruthy()
+    const hint = describedBy!.split(' ').map((id) => document.getElementById(id))
+    expect(hint.some((el) => /today or later/i.test(el?.textContent ?? ''))).toBe(true)
   })
 })

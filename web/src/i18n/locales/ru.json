@@ -67,7 +67,15 @@
       "weight": "Вес, кг",
       "pickupDate": "Дата забора груза",
       "submit": "Создать заказ",
-      "submitting": "Создание…"
+      "submitting": "Создание…",
+      "city": "Город",
+      "address": "Адрес",
+      "pickupHint": "Сегодня или позже",
+      "groups": {
+        "sender": "Отправитель",
+        "receiver": "Получатель",
+        "shipment": "Груз"
+      }
     },
     "fields": {
       "senderCity": "Город отправителя",
