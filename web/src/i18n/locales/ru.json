@@ -55,8 +55,13 @@
     "detail": {
       "loading": "Загрузка заказа…",
       "heading": "Заказ {{orderNumber}}",
-      "created": "Создан {{date}}",
-      "notFound": "Заказ не найден."
+      "notFound": "Заказ не найден.",
+      "orderNumber": "Номер заказа",
+      "createdLabel": "Создан",
+      "from": "Откуда",
+      "to": "Куда",
+      "distance": "Расстояние",
+      "distanceUnknown": "Не отслеживается"
     },
     "form": {
       "title": "Новый заказ на доставку",

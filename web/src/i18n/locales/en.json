@@ -53,8 +53,13 @@
     "detail": {
       "loading": "Loading order…",
       "heading": "Order {{orderNumber}}",
-      "created": "Created {{date}}",
-      "notFound": "Order not found."
+      "notFound": "Order not found.",
+      "orderNumber": "Order number",
+      "createdLabel": "Created",
+      "from": "From",
+      "to": "To",
+      "distance": "Distance",
+      "distanceUnknown": "Not tracked"
     },
     "form": {
       "title": "New delivery order",

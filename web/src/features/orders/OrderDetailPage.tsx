@@ -1,22 +1,24 @@
-import { Button } from '@heroui/react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { useOrder } from '../../api/orders'
+import { Breadcrumb } from '../../components/Breadcrumb'
 import { ErrorView, Loading } from '../../components/StateViews'
 import { useFormatters } from '../../i18n/useFormatters'
+import { OrderRoute } from './OrderRoute'
 
-function Row({ label, value }: { label: string; value: string }) {
+function Fact({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
-    <div className="border-b border-border py-3 last:border-b-0 sm:grid sm:grid-cols-3 sm:gap-4">
-      <dt className="text-muted">{label}</dt>
-      <dd className="sm:col-span-2">{value}</dd>
+    <div className="flex flex-col gap-0.5 bg-background px-4 py-3">
+      <span className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
+        {label}
+      </span>
+      <span className={muted ? 'text-muted' : 'text-lg font-semibold tabular-nums'}>{value}</span>
     </div>
   )
 }
 
 export function OrderDetailPage() {
   const { id = '' } = useParams()
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const { formatDate, formatDateTime, formatWeight } = useFormatters()
   const { data: order, isPending, isError, error, refetch } = useOrder(id)
@@ -34,27 +36,38 @@ export function OrderDetailPage() {
 
   return (
     <section>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">
-            {t('orders.detail.heading', { orderNumber: order.orderNumber })}
-          </h1>
-          <p className="text-muted">
-            {t('orders.detail.created', { date: formatDateTime(order.createdAt) })}
-          </p>
+      <Breadcrumb
+        items={[{ label: t('nav.breadcrumbOrders'), to: '/' }, { label: order.orderNumber }]}
+      />
+
+      <div className="flex flex-col gap-4 rounded-xl border border-border p-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
+              {t('orders.detail.orderNumber')}
+            </div>
+            <h1 className="font-mono text-xl font-semibold">{order.orderNumber}</h1>
+          </div>
+          <div className="text-right">
+            <div className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
+              {t('orders.detail.createdLabel')}
+            </div>
+            <div className="text-sm tabular-nums">{formatDateTime(order.createdAt)}</div>
+          </div>
         </div>
-        <Button variant="secondary" onClick={() => void navigate('/')}>
-          {t('common.backToList')}
-        </Button>
+
+        <OrderRoute order={order} />
       </div>
-      <dl className="rounded-lg border border-border px-4">
-        <Row label={t('orders.fields.senderCity')} value={order.senderCity} />
-        <Row label={t('orders.fields.senderAddress')} value={order.senderAddress} />
-        <Row label={t('orders.fields.receiverCity')} value={order.receiverCity} />
-        <Row label={t('orders.fields.receiverAddress')} value={order.receiverAddress} />
-        <Row label={t('orders.fields.weight')} value={formatWeight(order.weightKg)} />
-        <Row label={t('orders.fields.pickupDate')} value={formatDate(order.pickupDate)} />
-      </dl>
+
+      <div className="mt-4 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
+        <Fact label={t('orders.fields.weight')} value={formatWeight(order.weightKg)} />
+        <Fact label={t('orders.fields.pickupDate')} value={formatDate(order.pickupDate)} />
+        <Fact
+          label={t('orders.detail.distance')}
+          value={t('orders.detail.distanceUnknown')}
+          muted
+        />
+      </div>
     </section>
   )
 }
