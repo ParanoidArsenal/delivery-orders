@@ -1,15 +1,10 @@
 import type { TFunction } from 'i18next'
 import { z } from 'zod'
+import { todayIso } from '../../lib/dates'
 
 const MAX_CITY = 100
 const MAX_ADDRESS = 250
 const MAX_WEIGHT = 20000
-
-export function today(): string {
-  const now = new Date()
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
-  return local.toISOString().slice(0, 10)
-}
 
 export function buildOrderSchema(t: TFunction) {
   const requiredText = (max: number, fieldKey: string) =>
@@ -34,7 +29,7 @@ export function buildOrderSchema(t: TFunction) {
     pickupDate: z
       .string()
       .min(1, t('validation.required', { field: t('orders.fields.pickupDate') }))
-      .refine((value) => value >= today(), { message: t('validation.pickupDatePast') }),
+      .refine((value) => value >= todayIso(), { message: t('validation.pickupDatePast') }),
   })
 }
 

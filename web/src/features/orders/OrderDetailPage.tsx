@@ -1,21 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router'
 import { useOrder } from '../../api/orders'
+import { resolveErrorMessage } from '../../api/problem'
 import { Breadcrumb } from '../../components/Breadcrumb'
+import { Eyebrow, StatTile, TileRow } from '../../components/StatTile'
 import { ErrorView, Loading } from '../../components/StateViews'
 import { useFormatters } from '../../i18n/useFormatters'
 import { OrderRoute } from './OrderRoute'
-
-function Fact({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
-  return (
-    <div className="flex flex-col gap-0.5 bg-background px-4 py-3">
-      <span className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
-        {label}
-      </span>
-      <span className={muted ? 'text-muted' : 'text-lg font-semibold tabular-nums'}>{value}</span>
-    </div>
-  )
-}
 
 export function OrderDetailPage() {
   const { id = '' } = useParams()
@@ -27,7 +18,7 @@ export function OrderDetailPage() {
   if (isError) {
     return (
       <ErrorView
-        message={(error as Error).message || t('common.error')}
+        message={resolveErrorMessage(error, t('common.error'))}
         onRetry={() => void refetch()}
       />
     )
@@ -43,30 +34,28 @@ export function OrderDetailPage() {
       <div className="flex flex-col gap-4 rounded-xl border border-border p-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
-              {t('orders.detail.orderNumber')}
-            </div>
+            <Eyebrow>{t('orders.detail.orderNumber')}</Eyebrow>
             <h1 className="font-mono text-xl font-semibold">{order.orderNumber}</h1>
           </div>
-          <div className="text-right">
-            <div className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
-              {t('orders.detail.createdLabel')}
-            </div>
-            <div className="text-sm tabular-nums">{formatDateTime(order.createdAt)}</div>
+          <div className="flex flex-col text-right">
+            <Eyebrow>{t('orders.detail.createdLabel')}</Eyebrow>
+            <span className="text-sm tabular-nums">{formatDateTime(order.createdAt)}</span>
           </div>
         </div>
 
         <OrderRoute order={order} />
       </div>
 
-      <div className="mt-4 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
-        <Fact label={t('orders.fields.weight')} value={formatWeight(order.weightKg)} />
-        <Fact label={t('orders.fields.pickupDate')} value={formatDate(order.pickupDate)} />
-        <Fact
-          label={t('orders.detail.distance')}
-          value={t('orders.detail.distanceUnknown')}
-          muted
-        />
+      <div className="mt-4">
+        <TileRow>
+          <StatTile label={t('orders.fields.weight')} value={formatWeight(order.weightKg)} />
+          <StatTile label={t('orders.fields.pickupDate')} value={formatDate(order.pickupDate)} />
+          <StatTile
+            label={t('orders.detail.distance')}
+            value={t('orders.detail.distanceUnknown')}
+            muted
+          />
+        </TileRow>
       </div>
     </section>
   )

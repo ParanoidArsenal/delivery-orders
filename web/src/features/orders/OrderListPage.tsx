@@ -2,6 +2,7 @@ import { Button } from '@heroui/react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { useOrders } from '../../api/orders'
+import { resolveErrorMessage } from '../../api/problem'
 import { EmptyState, ErrorView, Loading } from '../../components/StateViews'
 import { OrdersSummary } from './OrdersSummary'
 import { OrdersTable } from './OrdersTable'
@@ -20,7 +21,7 @@ export function OrderListPage() {
   if (isError) {
     return (
       <ErrorView
-        message={(error as Error).message || t('common.error')}
+        message={resolveErrorMessage(error, t('common.error'))}
         onRetry={() => void refetch()}
       />
     )

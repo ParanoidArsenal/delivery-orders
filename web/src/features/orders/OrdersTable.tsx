@@ -3,39 +3,32 @@ import type { Order } from '../../api/client'
 import { OrderRow } from './OrderRow'
 import type { OrderListView, SortKey } from './useOrderListView'
 
-interface Props {
-  orders: Order[]
-  onOpen: (id: string) => void
-  sort: OrderListView['sort']
-  onSort: (key: SortKey) => void
-  query: string
-  onClearQuery: () => void
-}
+type Sort = OrderListView['sort']
 
 const HEAD_CLASS = 'px-4 py-2.5 font-medium'
 
-export function OrdersTable({ orders, onOpen, sort, onSort, query, onClearQuery }: Props) {
+function SortableHeader({
+  columnKey,
+  label,
+  sort,
+  onSort,
+  align,
+}: {
+  columnKey: SortKey
+  label: string
+  sort: Sort
+  onSort: (key: SortKey) => void
+  align?: 'right'
+}) {
   const { t } = useTranslation()
+  const active = sort?.key === columnKey
+  const ariaSort = active ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none'
+  const caret = active ? (sort.direction === 'asc' ? '↑' : '↓') : ''
 
-  const ariaSort = (key: SortKey) => {
-    if (sort?.key !== key) return 'none' as const
-    return sort.direction === 'asc' ? ('ascending' as const) : ('descending' as const)
-  }
-
-  const caret = (key: SortKey) => (sort?.key === key ? (sort.direction === 'asc' ? '↑' : '↓') : '')
-
-  const SortableHeader = ({
-    columnKey,
-    label,
-    align,
-  }: {
-    columnKey: SortKey
-    label: string
-    align?: 'right'
-  }) => (
+  return (
     <th
       scope="col"
-      aria-sort={ariaSort(columnKey)}
+      aria-sort={ariaSort}
       className={`${HEAD_CLASS} ${align === 'right' ? 'text-right' : ''}`}
     >
       <button
@@ -45,10 +38,23 @@ export function OrdersTable({ orders, onOpen, sort, onSort, query, onClearQuery 
         className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-foreground focus-visible:outline-2 focus-visible:outline-focus"
       >
         {label}
-        <span aria-hidden="true">{caret(columnKey)}</span>
+        <span aria-hidden="true">{caret}</span>
       </button>
     </th>
   )
+}
+
+interface Props {
+  orders: Order[]
+  onOpen: (id: string) => void
+  sort: Sort
+  onSort: (key: SortKey) => void
+  query: string
+  onClearQuery: () => void
+}
+
+export function OrdersTable({ orders, onOpen, sort, onSort, query, onClearQuery }: Props) {
+  const { t } = useTranslation()
 
   if (orders.length === 0) {
     return (
@@ -68,12 +74,28 @@ export function OrdersTable({ orders, onOpen, sort, onSort, query, onClearQuery 
           <caption className="sr-only">{t('orders.table.caption')}</caption>
           <thead className="bg-background-secondary">
             <tr className="text-[11px] uppercase tracking-wider text-muted">
-              <SortableHeader columnKey="orderNumber" label={t('orders.table.orderNumber')} />
+              <SortableHeader
+                columnKey="orderNumber"
+                label={t('orders.table.orderNumber')}
+                sort={sort}
+                onSort={onSort}
+              />
               <th scope="col" className={HEAD_CLASS}>
                 {t('orders.table.route')}
               </th>
-              <SortableHeader columnKey="weightKg" label={t('orders.table.weight')} align="right" />
-              <SortableHeader columnKey="pickupDate" label={t('orders.table.pickup')} />
+              <SortableHeader
+                columnKey="weightKg"
+                label={t('orders.table.weight')}
+                sort={sort}
+                onSort={onSort}
+                align="right"
+              />
+              <SortableHeader
+                columnKey="pickupDate"
+                label={t('orders.table.pickup')}
+                sort={sort}
+                onSort={onSort}
+              />
               <th scope="col" className="pr-4">
                 <span className="sr-only">{t('orders.table.actions')}</span>
               </th>

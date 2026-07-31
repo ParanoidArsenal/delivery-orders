@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Order } from '../../api/client'
+import { Eyebrow } from '../../components/StatTile'
 
 function Stop({
   kind,
@@ -22,9 +23,7 @@ function Stop({
         {last ? null : <span aria-hidden="true" className="min-h-6 w-0.5 flex-1 bg-border" />}
       </div>
       <div className={last ? '' : 'pb-3'}>
-        <div className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted">
-          {kind}
-        </div>
+        <Eyebrow>{kind}</Eyebrow>
         <div className="font-semibold">{city}</div>
         <div className="text-sm text-muted">{address}</div>
       </div>

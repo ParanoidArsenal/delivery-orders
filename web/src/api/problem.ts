@@ -13,3 +13,8 @@ export function extractProblem(body: unknown): { message: string; fieldErrors: F
 
   return { message, fieldErrors }
 }
+
+export function resolveErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message) return error.message
+  return fallback
+}

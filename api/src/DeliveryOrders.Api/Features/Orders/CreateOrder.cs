@@ -69,14 +69,14 @@ public static class CreateOrder
             DateOnly.FromDateTime(now.UtcDateTime), cancellationToken);
 
         var order = Order.Create(
-            orderNumber,
-            request.SenderCity,
-            request.SenderAddress,
-            request.ReceiverCity,
-            request.ReceiverAddress,
-            request.WeightKg,
-            request.PickupDate,
-            now);
+            orderNumber: orderNumber,
+            senderCity: request.SenderCity,
+            senderAddress: request.SenderAddress,
+            receiverCity: request.ReceiverCity,
+            receiverAddress: request.ReceiverAddress,
+            weightKg: request.WeightKg,
+            pickupDate: request.PickupDate,
+            createdAt: now);
 
         db.Orders.Add(order);
         await db.SaveChangesAsync(cancellationToken);

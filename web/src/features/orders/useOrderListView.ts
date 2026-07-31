@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { Order } from '../../api/client'
+import { todayIso } from '../../lib/dates'
 
 export type SortKey = 'orderNumber' | 'weightKg' | 'pickupDate'
 export type SortDirection = 'asc' | 'desc'
@@ -19,12 +20,6 @@ export interface OrderListView {
   summary: OrderListSummary
 }
 
-function localToday(): string {
-  const now = new Date()
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
-  return local.toISOString().slice(0, 10)
-}
-
 function matches(order: Order, needle: string): boolean {
   return [
     order.orderNumber,
@@ -40,7 +35,7 @@ function compare(a: Order, b: Order, key: SortKey): number {
   return a[key].localeCompare(b[key])
 }
 
-export function useOrderListView(orders: Order[], today: string = localToday()): OrderListView {
+export function useOrderListView(orders: Order[], today: string = todayIso()): OrderListView {
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<{ key: SortKey; direction: SortDirection } | null>(null)
 
@@ -56,8 +51,8 @@ export function useOrderListView(orders: Order[], today: string = localToday()):
     const needle = query.trim().toLowerCase()
     const filtered = needle ? orders.filter((order) => matches(order, needle)) : orders
     if (!sort) return filtered
-    const sorted = [...filtered].sort((a, b) => compare(a, b, sort.key))
-    return sort.direction === 'asc' ? sorted : sorted.reverse()
+    const direction = sort.direction === 'asc' ? 1 : -1
+    return [...filtered].sort((a, b) => direction * compare(a, b, sort.key))
   }, [orders, query, sort])
 
   const summary = useMemo<OrderListSummary>(() => {
