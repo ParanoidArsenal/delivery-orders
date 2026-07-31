@@ -1,5 +1,9 @@
 @import '@heroui/styles';
 
+:root {
+  --accent-foreground: var(--eclipse);
+}
+
 @media (width < 40rem) {
   .orders-table thead {
     display: none;
