@@ -1,73 +1,59 @@
 # Delivery Orders
 
-A web application for accepting delivery orders. It has three screens:
+Приложение для приёма заявок на доставку: форма создания, список заказов и просмотр
+заказа. ASP.NET 9, EF Core 9, PostgreSQL 17, React 19, HeroUI 3.
 
-- a **create order** form where all six fields are mandatory, grouped into sender,
-  receiver and shipment;
-- an **order list** showing every order with its automatically generated order number,
-  above a summary of count, total weight and the nearest upcoming pickup, with search
-  across number, city and address and sortable number, weight and pickup columns;
-- a **read-only order view**, opened by clicking a row, led by the route as an
-  origin-to-destination leg.
+## Запуск
 
-Search, sorting and the summary are computed in the browser from the list the API already
-returns, so they add no endpoints.
-
-The interface is available in **English and Russian** and in a **light and dark theme**,
-both switchable from the header.
-
-Built with ASP.NET 9, Entity Framework Core 9, PostgreSQL 17 and React 19.
-
-## Quick start
-
-The only prerequisites are Docker and Docker Compose.
+Нужен только Docker.
 
 ```bash
 docker compose up --build
 ```
 
-Then open:
-
 | | |
 | --- | --- |
-| Application | <http://localhost:8080> |
-| API reference (Scalar) | <http://localhost:8080/scalar/v1> |
-| OpenAPI document | <http://localhost:8080/openapi/v1.json> |
+| Приложение | <http://localhost:8080> |
+| Scalar | <http://localhost:8080/scalar/v1> |
+| OpenAPI | <http://localhost:8080/openapi/v1.json> |
 
-The database schema is created automatically: the API applies its EF Core migrations on
-startup, retrying while PostgreSQL finishes becoming available.
+Схему создавать руками не нужно: API сам накатывает миграции на старте, повторяя попытки,
+пока поднимается база.
 
-### Stopping
+Остановить — `docker compose down`, с удалением тома данных — `docker compose down -v`.
 
-```bash
-docker compose down      # stop, keep the data
-docker compose down -v   # stop and delete the database volume
-```
+## Что на экранах
 
-## Localization
+В форме шесть обязательных полей, разбитых на отправителя, получателя и груз. Номер
+заказа присваивается автоматически.
 
-The whole interface is translated into English and Russian. The two segmented buttons in
-the header switch the language; the choice is written to `localStorage` under `lang` and
-restored on the next visit, so no account or server round trip is involved. On a first
-visit the language is detected from the browser, falling back to English for anything
-other than English or Russian.
+В списке над таблицей сводка (количество, общий вес, ближайший забор), поиск по номеру,
+городу и адресу и сортировка по номеру, весу и дате забора. Всё это считается в браузере
+из того же ответа, который API уже отдаёт, отдельных эндпоинтов под это нет.
 
-All copy lives in two hand-edited files, `web/src/i18n/locales/en.json` and
-`web/src/i18n/locales/ru.json`; components contain no literal user-visible text. Order
-data is never translated — cities and addresses are shown exactly as they were typed.
+Карточка заказа открывается кликом по строке и работает только на чтение.
 
-Dates, times and weights are formatted with `Intl` bound to the active language, so the
-list shows `Jul 30, 2026` and `1,250.5 kg` in English and `30 июл. 2026 г.` and
-`1 250,5 кг` in Russian. The row count under the table uses the correct Russian plural
-form (`1 заказ`, `3 заказа`, `11 заказов`).
+Язык (RU/EN) и тема (светлая/тёмная) переключаются в шапке, выбор сохраняется в
+`localStorage`. Тема выставляется атрибутом `data-theme` на `<html>` — на нём завязана вся
+палитра HeroUI 3, поэтому `dark:`-классов в компонентах нет. Маленький скрипт в
+`index.html` применяет сохранённую тему до загрузки бандла, чтобы при перезагрузке не
+мигал белый фон. `prefers-color-scheme` намеренно не учитывается: единственный источник
+правды — тумблер.
 
-**The API is localized too.** Every request the frontend makes carries
-`Accept-Language: en|ru`, and ASP.NET's request localization resolves the culture from
-that header (unsupported values fall back to English). Validation messages and the "order
-not found" problem details come from `ValidationMessages.resx` /
-`ValidationMessages.ru.resx` and are resolved per request, so a server-side rejection
-appears in the same language as the rest of the screen and responses carry a matching
-`Content-Language` header:
+## Локализация
+
+Все тексты лежат в `web/src/i18n/locales/en.json` и `ru.json`, литералов в компонентах
+нет. Данные заказов не переводятся: города и адреса показываются как введены.
+
+Даты и веса форматируются через `Intl` по активному языку, так что в списке будет
+`Jul 30, 2026` / `1,250.5 kg` или `30 июл. 2026 г.` / `1 250,5 кг`. Счётчик строк
+использует правильную русскую форму множественного числа (`1 заказ`, `3 заказа`,
+`11 заказов`).
+
+Бэкенд локализован тоже. Фронт шлёт `Accept-Language: en|ru`, ASP.NET резолвит культуру из
+заголовка (неизвестные значения падают в английский), сообщения валидации и «заказ не
+найден» берутся из `ValidationMessages.resx` / `.ru.resx` и разрешаются на каждый запрос.
+В ответе приходит соответствующий `Content-Language`.
 
 ```bash
 curl -s -X POST http://localhost:8080/api/orders \
@@ -76,145 +62,83 @@ curl -s -X POST http://localhost:8080/api/orders \
 # → "Поле «Город отправителя» обязательно для заполнения.", "Вес должен быть больше 0 кг.", …
 ```
 
-Because the messages come from satellite assemblies and the header is parsed with real
-culture data, `InvariantGlobalization` is switched **off** in `api/Directory.Build.props`.
+Ради сателлитных сборок и разбора заголовка с настоящими культурами
+`InvariantGlobalization` в `api/Directory.Build.props` выключен.
 
-## Theme
+## Настройки
 
-The header also carries a light/dark toggle. It sets `data-theme="light|dark"` on the
-`<html>` element — the single attribute HeroUI v3 keys its entire palette on, so no
-component needs a `dark:` override — and persists the choice to `localStorage` under
-`theme`. A tiny inline script in `index.html` applies the stored theme before the bundle
-loads, so a reload never flashes the wrong background. The system `prefers-color-scheme`
-setting is deliberately not consulted: the toggle is the only input.
+У всех переменных есть рабочие значения по умолчанию, `.env` не обязателен. Если нужно
+переопределить — скопируйте `.env.example`.
 
-## Configuration
-
-Every variable has a working default, so `.env` is optional. Copy `.env.example` to
-`.env` to override.
-
-| Variable | Default | Purpose |
+| Переменная | По умолчанию | Зачем |
 | --- | --- | --- |
-| `POSTGRES_DB` | `delivery` | Database name |
-| `POSTGRES_USER` | `delivery` | Database user |
-| `POSTGRES_PASSWORD` | `delivery` | Database password |
-| `WEB_PORT` | `8080` | Host port the application is published on |
+| `POSTGRES_DB` | `delivery` | Имя базы |
+| `POSTGRES_USER` | `delivery` | Пользователь |
+| `POSTGRES_PASSWORD` | `delivery` | Пароль |
+| `WEB_PORT` | `8080` | Порт, на котором публикуется приложение |
 
-## Local development without Docker
+## Разработка без Docker
 
-Run only the database in Docker, then the API and the frontend on the host. Requires the
-.NET 9 SDK and Node 24.
+В контейнере остаётся только база, API и фронт запускаются на хосте. Нужны .NET 9 SDK и
+Node 24.
 
 ```bash
-# 1. Database
 docker compose up db -d
-
-# 2. API — http://localhost:8080
-dotnet run --project api/src/DeliveryOrders.Api
-
-# 3. Frontend — http://localhost:5173, proxying /api to the API
-cd web
-npm install
-npm run dev
+dotnet run --project api/src/DeliveryOrders.Api   # http://localhost:8080
+cd web && npm install && npm run dev              # http://localhost:5173
 ```
 
-The Vite dev server proxies `/api` to `http://localhost:8080`, and the API enables CORS
-for `http://localhost:5173` in the Development environment.
+Дев-сервер Vite проксирует `/api` на 8080, а API в Development разрешает CORS для
+`http://localhost:5173`.
 
-## Tests
+## Тесты
 
-**API** — 36 tests: unit tests for the order-number format, the domain entity and every
-validation rule, plus integration tests that run the real application against a
-throwaway PostgreSQL container via Testcontainers, including nine that assert
-`Accept-Language` behaviour — Russian and English validation messages, the regional
-(`ru-RU`) and full browser-style (`ru-RU,ru;q=0.9,en;q=0.8`) header forms, an unsupported
-locale falling back to English, a localized problem title, and a localized 404.
+Бэкенд, 36 тестов: юниты на формат номера, доменную сущность и правила валидации плюс
+интеграционные, которые поднимают реальное приложение против одноразового контейнера
+PostgreSQL через Testcontainers (в том числе девять на поведение `Accept-Language`).
 
 ```bash
-cd api
-dotnet test DeliveryOrders.sln
+cd api && dotnet test DeliveryOrders.sln
 ```
 
-Without a local .NET SDK, run them in a container. Testcontainers needs the Docker
-socket and a reachable host address:
-
-```bash
-docker run --rm \
-  -v "$PWD/api":/src -v dotnet-nuget:/root/.nuget/packages \
-  -v /var/run/docker.sock:/var/run/docker.sock -w /src \
-  -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal \
-  --add-host host.docker.internal:host-gateway \
-  mcr.microsoft.com/dotnet/sdk:9.0 dotnet test DeliveryOrders.sln
-```
-
-**Frontend** — 57 tests in 9 files:
-
-- 6 on the create form: required-field errors, past pickup dates, out-of-range weights,
-  the submitted payload, mapping a server field error onto the right input, and
-  re-translating messages already on screen when the language changes;
-- 6 on localization: copy re-rendering between languages, the active-language button
-  state, Russian and English plural forms for the row count, `<html lang>`, and a check
-  that the two locale files have identical key sets;
-- 5 on the theme: the light default, toggling and restoring `data-theme`, persistence to
-  `localStorage`, and the toggle's accessible label;
-- 4 on the formatters: English and Russian dates, the localized weight unit, and whole
-  numbers not being padded with decimals;
-- 7 on the orders table: translated column headers, the row's link role and accessible
-  name, click and Enter/Space activation, localized weight and date cells, the plural row
-  count, and the `data-label` attributes the mobile card layout depends on;
-- 2 on `Accept-Language` propagation: the header carries the active language and follows
-  a language change;
-- 17 on the list view logic: search across number, city and address; sorting by number,
-  weight and pickup date in both directions; and the derived summary, including that the
-  nearest pickup ignores dates that have already passed;
-- 5 on the order detail screen: the route's origin and destination, the fact tiles, the
-  breadcrumb, and that no editable control is rendered.
-
-### A known limitation
-
-The pickup-date field is a native `<input type="date">`, so Chrome renders its
-`mm/dd/yyyy` placeholder from the **browser's** UI locale rather than from
-`<html lang>`. Switching the app to Russian cannot change it; only a custom date-picker
-component could, which is more machinery than the field warrants here.
+Фронтенд, 57 тестов в 9 файлах: форма и маппинг серверных ошибок на поля, переключение
+языка и формы множественного числа, тема, форматтеры, таблица, проброс `Accept-Language`,
+логика поиска/сортировки/сводки и карточка заказа.
 
 ```bash
 cd web
 npm install
 npm test          # Vitest
-npm run typecheck # tsc --noEmit
-npm run build     # production bundle
+npm run typecheck
+npm run build
 ```
 
-## The OpenAPI contract
+## Контракт OpenAPI
 
-The API's OpenAPI document is the single source of truth for the request and response
-shapes, and it is enforced on both sides.
-
-`Microsoft.AspNetCore.OpenApi` generates the document; `Microsoft.Extensions.ApiDescription.Server`
-writes it to `api/openapi/v1.json` during `dotnet build`, so it is reviewable in the
-repository and shows up in diffs. The frontend generates its TypeScript types from that
-file and consumes them with `openapi-fetch`:
+Документ OpenAPI — единственный источник правды по формам запросов и ответов, и он
+проверяется с обеих сторон. `Microsoft.AspNetCore.OpenApi` его генерирует,
+`Microsoft.Extensions.ApiDescription.Server` пишет в `api/openapi/v1.json` на `dotnet
+build`, так что файл лежит в репозитории и виден в диффах. Фронт генерирует из него типы и
+ходит через `openapi-fetch`:
 
 ```bash
-cd web
-npm run generate:api   # api/openapi/v1.json -> src/api/schema.d.ts
+cd web && npm run generate:api   # api/openapi/v1.json -> src/api/schema.d.ts
 ```
 
-The frontend therefore declares no order interface of its own — renaming a field on the
-server makes the frontend fail to type-check. The generated file is committed so
-`npm ci && npm run build` works without a running API.
+Своего интерфейса заказа на фронте поэтому нет: переименуете поле на сервере — упадёт
+тайпчек. Сгенерированный файл закоммичен, чтобы `npm ci && npm run build` работал без
+запущенного API.
 
-## Architecture
+## Как устроено
 
-The API is a single ASP.NET 9 project organised in **vertical slices**: each operation
-lives in one file under `Features/Orders/` containing its request DTO, validator,
-handler and endpoint mapping, so the whole path for creating an order is readable in one
-place. Layer discipline is kept without extra projects — `Domain/` has no EF Core or
-ASP.NET dependency, EF Core types appear only under `Infrastructure/`, and entities never
-cross the HTTP boundary.
+API — один проект ASP.NET 9, нарезанный вертикальными слайсами: каждая операция лежит в
+одном файле в `Features/Orders/` вместе со своим DTO, валидатором, хендлером и маппингом
+эндпоинта, так что весь путь создания заказа читается в одном месте. Слои при этом не
+размазаны по лишним проектам: в `Domain/` нет ни EF Core, ни ASP.NET, типы EF встречаются
+только в `Infrastructure/`, сущности не выходят за HTTP-границу.
 
-**Order numbers** are `ORD-{yyyyMMdd}-{sequence}`, restarting daily. The sequence is
-allocated with a single atomic statement:
+Номера заказов — `ORD-{yyyyMMdd}-{sequence}`, нумерация перезапускается каждый день.
+Последовательность выдаётся одним атомарным запросом:
 
 ```sql
 INSERT INTO order_number_counters (day, last_value) VALUES (@day, 1)
@@ -222,81 +146,57 @@ ON CONFLICT (day) DO UPDATE SET last_value = order_number_counters.last_value + 
 RETURNING last_value;
 ```
 
-One round trip, correct under concurrent creates, with no application lock and no
-read-then-write race. A test asserts that 20 simultaneous creates produce 20 distinct
-sequential numbers. The unique index on `order_number` is a backstop, not the mechanism.
+Один round trip, корректно при конкурентных вставках, без блокировок в приложении и без
+гонки read-then-write. Тест проверяет, что 20 одновременных созданий дают 20 разных
+последовательных номеров. Уникальный индекс на `order_number` тут страховка, а не механизм.
 
-**Validation** runs in a FluentValidation endpoint filter and returns RFC 9457
-`ProblemDetails` with an `errors` dictionary keyed by camelCase field name, which the
-frontend maps back onto individual inputs. The same rules are mirrored in a Zod schema
-for immediate client-side feedback; the server remains the authority. Each side reads its
-copy from its own message store — the locale JSON on the client, the `.resx` files on the
-server — so the wording agrees in either language.
+Валидация живёт в endpoint-фильтре FluentValidation и отдаёт `ProblemDetails` по RFC 9457
+со словарём `errors` по camelCase-именам полей, который фронт раскладывает обратно по
+инпутам. Те же правила продублированы Zod-схемой для мгновенной подсказки в браузере,
+но авторитет остаётся за сервером.
 
-**In production there is one origin**: nginx serves the built frontend and
-reverse-proxies `/api`, `/openapi`, `/scalar` and `/health` to the API, so no CORS
-configuration is involved.
+В проде источник один: nginx раздаёт собранный фронт и проксирует `/api`, `/openapi`,
+`/scalar` и `/health` на API, так что CORS не нужен.
 
-## Project layout
+## Структура
 
 ```
 api/
   src/DeliveryOrders.Api/
     Program.cs                    # composition root
-    Domain/                       # Order entity, order-number format
-    Features/Orders/              # one file per operation
-    Infrastructure/               # DbContext, configurations, migrations, generator
-    Common/                       # validation filter, startup migration, localization setup
+    Domain/                       # сущность Order, формат номера
+    Features/Orders/              # по файлу на операцию
+    Infrastructure/               # DbContext, конфигурации, миграции, генератор номеров
+    Common/                       # фильтр валидации, миграции на старте, локализация
     Resources/                    # ValidationMessages.resx (+ .ru)
-    Dockerfile
-  tests/DeliveryOrders.Api.Tests/ # Unit/ and Integration/
-  openapi/v1.json                 # generated at build, committed
+  tests/DeliveryOrders.Api.Tests/ # Unit/ и Integration/
+  openapi/v1.json                 # генерируется при сборке, закоммичен
 web/
   src/
-    api/                          # generated schema, typed client, query hooks
-    features/orders/              # list, create and detail screens
-    components/                   # layout, language switcher, theme toggle, state views
-    i18n/                         # i18next setup, en/ru locale files, Intl formatters
-    theme/                        # data-theme provider and useTheme()
-  nginx.conf                      # static serving + /api reverse proxy
-  Dockerfile
+    api/                          # схема, типизированный клиент, хуки запросов
+    features/orders/              # список, создание, карточка
+    components/                   # лейаут, переключатели языка и темы, состояния
+    i18n/                         # i18next, локали, форматтеры Intl
+    theme/                        # провайдер data-theme и useTheme()
+  nginx.conf
 docker-compose.yml
 ```
 
-## Implementation notes
+## Заметки
 
-A few deliberate deviations from the versions originally planned, each forced by a real
-conflict:
+Несколько мест, где версии разошлись с изначальным планом. TypeScript остался на 5.9.3:
+`openapi-typescript` 7.13.0 требует `typescript@^5.x`. Вместо `react-router-dom` стоит
+`react-router` 8.3.0 — в диапазоне 7.12–8.2 висит
+[GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2), да и с 7-й версии
+`react-router` его заменяет. `Microsoft.EntityFrameworkCore.Relational` закреплён явно,
+иначе тестовый проект тянул EF старее, чем тот, под который собран API (Npgsql 9.0.4
+просит всего 9.0.1).
 
-- **TypeScript 5.9.3, not 7.x** — `openapi-typescript` 7.13.0 declares a peer
-  dependency on `typescript@^5.x`.
-- **`react-router` 8.3.0 instead of `react-router-dom`** — the 7.12–8.2 range carries
-  advisory [GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2), and
-  from v7 onwards `react-router` supersedes `react-router-dom` anyway.
-- **HeroUI 3 is composition-based** over `react-aria-components` and has no `TextField`
-  wrapper or provider, so form fields wire label association explicitly with
-  `htmlFor`/`id`, `aria-describedby` and `data-invalid`.
-- **`Microsoft.EntityFrameworkCore.Relational` is pinned explicitly** — Npgsql 9.0.4 only
-  requires EF Core 9.0.1, which otherwise left the test project resolving an older EF
-  Core than the API was compiled against.
-- **Startup migration is skipped during document generation** — the OpenAPI exporter runs
-  the application up to `app.Run()` at build time, with no database reachable.
-- **`AddLocalization()` is called without `ResourcesPath`** — the resource marker type
-  already lives in the `DeliveryOrders.Api.Resources` namespace, and
-  `ResourceManagerStringLocalizerFactory` composes the root namespace with
-  `ResourcesPath`. Setting both produced the prefix
-  `DeliveryOrders.Api.Resources.Resources.ValidationMessages`, which matches no embedded
-  resource, and every lookup silently returned the raw key instead of the message.
-- **Validation messages use FluentValidation's lazy `WithMessage(_ => …)` overload** —
-  the eager string overload would resolve the message once when the validator is
-  constructed, before the request culture is known.
+Поле даты забора — нативный `<input type="date">`, и Chrome рисует плейсхолдер
+`mm/dd/yyyy` по локали браузера, а не по `<html lang>`. Переключение языка приложения на
+это не влияет, лечится только своим датапикером — для одного поля перебор.
 
-Localization adds three frontend dependencies, at the versions the design called for:
-`i18next` 26.3.6, `react-i18next` 17.0.11 and `i18next-browser-languagedetector` 8.2.1.
-They push the production bundle past Vite's default 500 kB advisory threshold (562 kB
-raw, 176 kB gzipped); the warning is left visible rather than silenced by raising the
-limit.
-
-`npm audit` reports advisories in `openapi-typescript`'s transitive dependency chain
-(`@redocly/openapi-core` → `minimatch` → `brace-expansion`). These are build-time only,
-ship nothing to the browser, and have no upstream fix short of a major downgrade.
+Библиотеки i18next выводят прод-бандл за дефолтный порог Vite в 500 КБ (562 КБ сырых,
+176 КБ в gzip); предупреждение оставил как есть, а не заглушил поднятием лимита. `npm
+audit` ругается на транзитивные зависимости `openapi-typescript` — они сборочные, в
+браузер ничего не уезжает.
